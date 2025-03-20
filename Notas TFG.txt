@@ -1,0 +1,15 @@
+La aplicación debe permitir tomar decisiones al paciente
+
+Uso fácil, pacientes mayores de 65 años
+
+Información tratada. Se busca integrar la información dentro de la aplicación. 
+
+Se quiere que el paciente pueda obtener conocimiento de su tratamiento
+
+Calendario con la dosificación
+
+En caso de que el paciente tenga efectos secundarios, darle recomendaciones para solucionar y en caso de que empeore, mandarlo al hospital.
+
+Rol de administrador y rol de paciente
+
+Flujo para la realización de los efectos secundarios
