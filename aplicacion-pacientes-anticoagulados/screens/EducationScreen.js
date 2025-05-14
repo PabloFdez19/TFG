@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+
 
 const EducationScreen = () => {
   const sections = [
@@ -33,35 +34,41 @@ const EducationScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Información Educativa</Text>
-      <Text style={styles.subtitle}>
-        Conoce más sobre tu tratamiento anticoagulante y cómo manejarlo adecuadamente
-      </Text>
-
-      {sections.map((section, index) => (
-        <View key={index} style={styles.section}>
-          <TouchableOpacity 
-            style={styles.sectionHeader} 
-            onPress={() => toggleSection(index)}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons name={section.icon} size={24} color="#2a86ff" />
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <MaterialIcons 
-              name={expandedSection === index ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-              size={24} 
-              color="#666" 
-            />
-          </TouchableOpacity>
-          
-          {expandedSection === index && (
-            <Text style={styles.sectionContent}>{section.content}</Text>
-          )}
-        </View>
-      ))}
-    </ScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
+      <ScrollView contentContainerStyle={styles.container}>
+      {<ScrollView style={styles.container}>
+        <Text style={styles.header}>Información Educativa</Text>
+        <Text style={styles.subtitle}>
+          Conoce más sobre tu tratamiento anticoagulante y cómo manejarlo adecuadamente
+        </Text>
+  
+        {sections.map((section, index) => (
+          <View key={index} style={styles.section}>
+            <TouchableOpacity 
+              style={styles.sectionHeader} 
+              onPress={() => toggleSection(index)}
+              activeOpacity={0.7}
+            >
+              <MaterialIcons name={section.icon} size={24} color="#2a86ff" />
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+              <MaterialIcons 
+                name={expandedSection === index ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+                size={24} 
+                color="#666" 
+              />
+            </TouchableOpacity>
+            
+            {expandedSection === index && (
+              <Text style={styles.sectionContent}>{section.content}</Text>
+            )}
+          </View>
+        ))}
+      </ScrollView>}
+      </ScrollView> 
+    </SafeAreaView>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -115,6 +122,11 @@ const styles = StyleSheet.create({
     color: '#444',
     whiteSpace: 'pre-line',
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  
 });
 
 export default EducationScreen;
