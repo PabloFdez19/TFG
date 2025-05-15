@@ -8,7 +8,7 @@ const EducationScreen = () => {
     {
       title: "Tratamiento Anticoagulante",
       icon: "medication",
-      content: "Los anticoagulantes orales como Sintrom® y Aldocumar® son medicamentos que ayudan a prevenir la formación de coágulos sanguíneos. Actúan inhibiendo la vitamina K, necesaria para la coagulación."
+      content: "Los anticoagulantes orales, utilizados ampliamente en pacientes con enfermedades cardiovasculares y trastornos tromboembólicos, entre otras indicaciones, son medicamentos de alto riesgo que requieren de un adecuado control, por tal motivo es importante que los pacientes conozcan y comprendan su funcionamiento para lograr un uso seguro y eficaz, así como una adecuada adherencia. La evidencia ha demostrado que evaluar e incrementar el conocimiento de los pacientes sobre su terapia anticoagulante conduce a mejores resultados clínicos. En el presente estudio se realizó una búsqueda de instrumentos desarrollados que evalúen el conocimiento de los pacientes sobre su terapia anticoagulante y una revisión narrativa de las herramientas encontradas. Actualmente existen cinco herramientas desarrolladas y validadas en diferentes idiomas para su uso en pacientes que reciben tanto antagonistas de la vitamina K, como anticoagulantes orales directos. No obstante, aún no se cuenta con una herramienta validada en español que pueda ser utilizada en países de habla hispana."
     },
     {
       title: "Factores que afectan el INR",
