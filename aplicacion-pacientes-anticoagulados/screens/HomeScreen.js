@@ -1,7 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Platform, StatusBar } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import styles from '../Styles/HomeStyle.js';
 
+const gradients = [
+  ['#E0F7FA', '#C3EEF5'],
+  ['#C3EEF5', '#A6E5EF'],
+  ['#A6E5EF', '#89DCE9'],
+  ['#89DCE9', '#FFECB3'],
+  ['#FFECB3', '#FFE082'],
+];
 const HomeScreen = ({ navigation }) => {
   const menuItems = [
     {
@@ -42,18 +51,26 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.subtitle}>Gestiona tu tratamiento anticoagulante</Text>
       </View>
 
+      
       <View style={styles.menuContainer}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             key={index}
-            style={styles.menuCard}
+            style={styles.menuCardWrapper}
             onPress={() => navigation.navigate(item.screen)}
+            activeOpacity={0.8}
           >
-            <View style={styles.iconContainer}>
-              {item.icon}
-            </View>
-            <Text style={styles.menuText}>{item.title}</Text>
-            <MaterialIcons name="chevron-right" size={24} color="#999" />
+            <LinearGradient
+              colors={gradients[index]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.menuCardLarge}
+            >
+              <View style={styles.iconContainerLarge}>
+                {item.icon}
+              </View>
+              <Text style={styles.menuTextLarge}>{item.title}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         ))}
       </View>
@@ -67,90 +84,5 @@ const HomeScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#F5F9FA',
-    padding: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2A7F9F',
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  menuContainer: {
-    marginBottom: 30,
-  },
-  menuCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  iconContainer: {
-    backgroundColor: '#E6F2F7',
-    borderRadius: 50,
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  menuText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  emergencyContainer: {
-    backgroundColor: '#FFF8F8',
-    borderRadius: 10,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: '#FFE0E0',
-  },
-  emergencyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#D32F2F',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  emergencyButton: {
-    backgroundColor: '#D32F2F',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-  },
-  emergencyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 export default HomeScreen;

@@ -1,0 +1,21 @@
+# update-deps.ps1
+npx expo install expo@latest
+
+Write-Host "Eliminando node_modules y archivos de lock..."
+Remove-Item -Recurse -Force node_modules, package-lock.json, yarn.lock
+
+Write-Host "Desinstalando librerías antiguas..."
+npm uninstall @expo/metro-runtime expo-status-bar react react-dom react-native react-native-reanimated react-native-safe-area-context react-native-screens react-native-web
+
+Write-Host "Instalando las últimas versiones disponibles..."
+npm install @expo/metro-runtime@latest
+npm install expo-status-bar@latest
+npm install react@latest
+npm install react-dom@latest
+npm install react-native@latest
+npm install react-native-reanimated@latest
+npm install react-native-safe-area-context@latest
+npm install react-native-screens@latest
+npm install react-native-web@latest
+
+Write-Host "✅ Todo actualizado a las últimas versiones"
