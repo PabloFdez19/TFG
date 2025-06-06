@@ -86,6 +86,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    backgroundColor: '#ADD8E6',
   },
   iconContainerLarge: {
     backgroundColor: '#ffffff90',

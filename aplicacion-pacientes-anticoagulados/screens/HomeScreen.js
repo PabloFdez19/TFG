@@ -1,16 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Platform, StatusBar } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../Styles/HomeStyle.js';
+import { useEmergency } from '../components/emergencyCall.js';
 
-const gradients = [
-  ['#E0F7FA', '#C3EEF5'],
-  ['#C3EEF5', '#A6E5EF'],
-  ['#A6E5EF', '#89DCE9'],
-  ['#89DCE9', '#FFECB3'],
-  ['#FFECB3', '#FFE082'],
-];
 const HomeScreen = ({ navigation }) => {
   const menuItems = [
     {
@@ -40,6 +33,11 @@ const HomeScreen = ({ navigation }) => {
     }
   ];
 
+  const { triggerEmergency } = useEmergency({
+    callNumber: '653773662',
+    whatsappNumber: '653773662',
+  });
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -60,24 +58,19 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate(item.screen)}
             activeOpacity={0.8}
           >
-            <LinearGradient
-              colors={gradients[index]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.menuCardLarge}
-            >
+            <View style={styles.menuCardLarge}>
               <View style={styles.iconContainerLarge}>
                 {item.icon}
               </View>
               <Text style={styles.menuTextLarge}>{item.title}</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.emergencyContainer}>
         <Text style={styles.emergencyTitle}>¿Necesitas ayuda urgente?</Text>
-        <TouchableOpacity style={styles.emergencyButton}>
+        <TouchableOpacity style={styles.emergencyButton} onPress={triggerEmergency}>
           <Text style={styles.emergencyButtonText}>Contactar emergencias</Text>
         </TouchableOpacity>
       </View>
