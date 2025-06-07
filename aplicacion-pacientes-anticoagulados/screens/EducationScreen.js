@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import {AnticoagulantEducation} from '../components/AnticoagulantEducation';
+import AnticoagulantEducation from '../components/AnticoagulantEducation';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const sections = [
   {
     title: "Tratamiento Anticoagulante",
     icon: "medication",
-    content: AnticoagulantEducation,
+    content: <AnticoagulantEducation />
   },
   {
     title: "Factores que afectan el INR",
@@ -43,7 +43,6 @@ const EducationScreen = ({ navigation }) => {
             <View style={styles.sectionHeader}>
               <MaterialIcons name={section.icon} size={30} color="#2a86ff" />
               <Text style={styles.sectionTitle}>{section.title}</Text>
-              <MaterialIcons name="chevron-right" size={30} color="#999" />
             </View>
           </TouchableOpacity>
         ))}
@@ -59,7 +58,8 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
-    paddingTop: 75
+    paddingTop: 75,
+    paddingBottom: 50,
   },
   header: {
     fontSize: 34,
@@ -80,6 +80,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingVertical: 20,
     paddingHorizontal: 15,
+    height: 150,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     flex: 1,
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: '600',
     marginLeft: 15,
     color: '#333',

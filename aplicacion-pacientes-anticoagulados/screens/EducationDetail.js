@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const EducationDetail = ({ route, navigation }) => {
   const { section } = route.params;
-  const ContentComponent = section.content;
+  const ContentComponent = section.AnticoagulantEducation || null;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -13,7 +13,7 @@ const EducationDetail = ({ route, navigation }) => {
         <Text style={styles.title}>{section.title}</Text>
       </View>
       <View>
-        {ContentComponent ? <ContentComponent /> : null}
+        {section.content}
       </View>
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Text style={styles.buttonText}>Cerrar</Text>
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 30,
     paddingTop: 75,
+    paddingBottom: 50,
     backgroundColor: '#fff',
     flexGrow: 1,
     justifyContent: 'flex-start',
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     marginLeft: 15,
     color: '#333',
