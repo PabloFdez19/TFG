@@ -50,6 +50,20 @@ const EducationStyle = StyleSheet.create({
         marginLeft: 15,
         color: '#333',
     },
+    button: {
+        backgroundColor: '#2a86ff',
+        padding: 20,
+        marginTop: 25,
+        borderRadius: 10,
+        alignSelf: 'center',
+        width: '60%',
+    },
+    buttonText: {
+        fontSize: 20,
+        color: '#fff',
+        textAlign: 'center',
+        fontWeight: '600',
+    },
 });
 
 const EducationDetailStyle = StyleSheet.create({
@@ -98,13 +112,13 @@ const EducationDetailStyle = StyleSheet.create({
 
 const AnticoagulantEducationStyle = StyleSheet.create({
     title: {
-        fontSize: 30,
+        fontSize: 28,
         fontWeight: 'bold',
         marginTop: 20,
         color: '#003366',
     },
     subtitle: {
-        fontSize: 2,
+        fontSize: 25,
         fontWeight: '600',
         marginTop: 10,
         color: '#333',
@@ -122,6 +136,21 @@ const AnticoagulantEducationStyle = StyleSheet.create({
         marginLeft: 10,
         marginTop: 6,
         color: '#444',
+    },
+    warningBullet: {
+        fontSize: 20,
+        color: '#d32f2f', // Rojo oscuro para alertas
+        fontWeight: '600',
+        marginVertical: 4,
+        marginLeft: 10,
+        paddingLeft: 15,
+        borderLeftWidth: 3,
+        borderLeftColor: '#ff5252', // Rojo más claro para el borde
+        backgroundColor: '#ffebee', // Fondo rojo muy claro
+        paddingVertical: 6,
+        paddingRight: 10,
+        borderRadius: 4,
+        marginRight: 15,
     },
     footer: {
         fontSize: 22,

@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { EducationStyle } from '../Styles/EducationStyles';
 import INR from '../components/INR';
 import Riesgos from '../components/Riesgos';
-import InformacionValidada from '../components/InformacionValidada';
+import InformacionValidada from '../components/informacionValidada';
 
 const sections = [
   {
@@ -50,6 +50,9 @@ const EducationScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         ))}
+        <TouchableOpacity style={EducationStyle.button} onPress={() => navigation.goBack()}>
+        <Text style={EducationStyle.buttonText}>Atras</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

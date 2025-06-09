@@ -67,7 +67,7 @@ export default StyleSheet.create({
   emergencyButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 25,
   },
   menuCardWrapper: {
     marginBottom: 20,
@@ -98,7 +98,7 @@ export default StyleSheet.create({
     marginRight: 20,
   },
   menuTextLarge: {
-    fontSize: 20,
+    fontSize: 25,
     color: '#333',
     fontWeight: '600',
     flexShrink: 1,

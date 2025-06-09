@@ -5,7 +5,7 @@ import { AnticoagulantEducationStyle } from '../Styles/EducationStyles';
 const InformacionValidada = () => {
   return (
     <ScrollView style={AnticoagulantEducationStyle.container}>
-      <Text style={AnticoagulantEducationStyle.header}>Guía Práctica para Pacientes Anticoagulados</Text>
+      <Text style={AnticoagulantEducationStyle.title}>Guía Práctica para Pacientes Anticoagulados</Text>
 
       <Text style={AnticoagulantEducationStyle.subtitle}>Control de su Tratamiento</Text>
       <Text style={AnticoagulantEducationStyle.bullet}>✓ Realice sus análisis de sangre (INR) con la frecuencia que le indique su médico</Text>
