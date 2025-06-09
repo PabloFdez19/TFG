@@ -4,6 +4,7 @@ const Interactions = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f5f5f5',
+    paddingTop: 50,
   },
   buscador: {
     height: 50,

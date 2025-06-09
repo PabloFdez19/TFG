@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Picker} from 'react-native';
-import Interactions from '../Styles/InteractionStyles';
-import {initializeDatabase} from '../Database/initDatabase'; // Asegúrate de que la ruta sea correcta
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import Interactions from '../Styles/InteractionStyles.js';
+import initializeDatabase from '../components/Database/initDatabase.js';
 
 const InteractionsScreen = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -9,62 +10,74 @@ const InteractionsScreen = () => {
   const [filtroRiesgo, setFiltroRiesgo] = useState('todos');
   const [interacciones, setInteracciones] = useState([]);
   const [interaccionesFiltradas, setInteraccionesFiltradas] = useState([]);
+  const [db, setDb] = useState(null);
 
-
-  // Cargar todos los datos al iniciar
   useEffect(() => {
-    initializeDatabase();
-    cargarInteracciones();
+    const initDB = async () => {
+      try {
+        const database = await initializeDatabase();
+        setDb(database);
+        await cargarInteracciones(database);
+      } catch (err) {
+        console.error('Error al inicializar DB:', err);
+      }
+    };
+
+    initDB();
   }, []);
 
-  const cargarInteracciones = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT * FROM interacciones',
-        [],
-        (_, {rows}) => {
-          const datos = rows.raw();
-          setInteracciones(datos);
-          setInteraccionesFiltradas(datos);
-        },
-        error => console.log('Error al cargar interacciones: ', error),
-      );
-    });
+  const cargarInteracciones = async (database) => {
+    if (!database) return;
+
+    try {
+      const results = await database.getAllAsync('SELECT * FROM interacciones');
+      setInteracciones(results);
+      setInteraccionesFiltradas(results);
+    } catch (error) {
+      console.log('Error al cargar interacciones: ', error);
+    }
   };
 
-  // Aplicar filtros cuando cambia la búsqueda o los filtros
   useEffect(() => {
-    let resultados = interacciones;
+    if (!interacciones || interacciones.length === 0) return;
 
-    // Filtrar por tipo
+    let resultados = [...interacciones];
+
     if (filtroTipo !== 'todos') {
       resultados = resultados.filter(item => item.tipo === filtroTipo);
     }
 
-    // Filtrar por riesgo
     if (filtroRiesgo !== 'todos') {
       resultados = resultados.filter(item => item.riesgo === filtroRiesgo);
     }
 
-    // Filtrar por texto de búsqueda
     if (busqueda) {
       const textoBusqueda = busqueda.toLowerCase();
-      resultados = resultados.filter(item => 
-        item.nombre.toLowerCase().includes(textoBusqueda) || 
-        item.descripcion.toLowerCase().includes(textoBusqueda)
+      resultados = resultados.filter(item =>
+        (item.nombre && item.nombre.toLowerCase().includes(textoBusqueda)) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(textoBusqueda))
       );
     }
 
     setInteraccionesFiltradas(resultados);
   }, [busqueda, filtroTipo, filtroRiesgo, interacciones]);
 
-  const renderItem = ({item}) => (
+  const getColorRiesgo = (riesgo) => {
+    switch (riesgo) {
+      case 'alto': return 'red';
+      case 'medio': return 'orange';
+      case 'bajo': return 'green';
+      default: return 'gray';
+    }
+  };
+
+  const renderItem = ({ item }) => (
     <View style={Interactions.itemContainer}>
       <Text style={Interactions.nombre}>{item.nombre}</Text>
       <Text style={Interactions.tipo}>{item.tipo.toUpperCase()}</Text>
       <Text style={Interactions.descripcion}>{item.descripcion}</Text>
       {item.riesgo && (
-        <Text style={[Interactions.riesgo, {color: getColorRiesgo(item.riesgo)}]}>
+        <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
           Riesgo: {item.riesgo.toUpperCase()}
         </Text>
       )}
@@ -74,18 +87,8 @@ const InteractionsScreen = () => {
     </View>
   );
 
-  const getColorRiesgo = (riesgo) => {
-    switch(riesgo) {
-      case 'alto': return 'red';
-      case 'medio': return 'orange';
-      case 'bajo': return 'green';
-      default: return 'gray';
-    }
-  };
-
   return (
     <View style={Interactions.container}>
-      {/* Barra de búsqueda */}
       <TextInput
         style={Interactions.buscador}
         placeholder="Buscar alimento, medicamento o situación..."
@@ -93,7 +96,6 @@ const InteractionsScreen = () => {
         onChangeText={setBusqueda}
       />
 
-      {/* Filtros */}
       <View style={Interactions.filtrosContainer}>
         <Picker
           selectedValue={filtroTipo}
@@ -116,7 +118,6 @@ const InteractionsScreen = () => {
         </Picker>
       </View>
 
-      {/* Lista de resultados */}
       <FlatList
         data={interaccionesFiltradas}
         renderItem={renderItem}
