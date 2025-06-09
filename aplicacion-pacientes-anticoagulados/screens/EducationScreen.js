@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { EducationStyle } from '../Styles/EducationStyles';
 import INR from '../components/INR';
 import Riesgos from '../components/Riesgos';
+import InformacionValidada from '../components/InformacionValidada';
 
 const sections = [
   {
@@ -25,7 +26,7 @@ const sections = [
   {
     title: "Información Validada",
     icon: "verified",
-    content: "Toda la información proporcionada está basada en guías...",
+    content: <InformacionValidada />
   },
 ];
 

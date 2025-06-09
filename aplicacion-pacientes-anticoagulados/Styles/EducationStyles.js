@@ -104,7 +104,7 @@ const AnticoagulantEducationStyle = StyleSheet.create({
         color: '#003366',
     },
     subtitle: {
-        fontSize: 22,
+        fontSize: 2,
         fontWeight: '600',
         marginTop: 10,
         color: '#333',
