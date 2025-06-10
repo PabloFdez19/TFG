@@ -13,13 +13,14 @@ const Interactions = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 16,
     marginBottom: 16,
-    fontSize: 16,
+    fontSize: 20,
     backgroundColor: 'white',
   },
   filtrosContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 16,
+
   },
   filtro: {
     flex: 1,
@@ -40,28 +41,28 @@ const Interactions = StyleSheet.create({
     elevation: 2,
   },
   nombre: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 4,
     color: '#333',
   },
   tipo: {
-    fontSize: 14,
+    fontSize: 20,
     color: '#666',
     marginBottom: 8,
   },
   descripcion: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 8,
     color: '#444',
   },
   riesgo: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 8,
   },
   accion: {
-    fontSize: 16,
+    fontSize: 20,
     fontStyle: 'italic',
     color: '#555',
   },

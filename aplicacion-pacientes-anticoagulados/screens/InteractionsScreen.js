@@ -65,8 +65,10 @@ const InteractionsScreen = () => {
   const getColorRiesgo = (riesgo) => {
     switch (riesgo) {
       case 'alto': return 'red';
+      case 'medio-alto': return 'darkorange';
       case 'medio': return 'orange';
-      case 'bajo': return 'green';
+      case 'bajo-medio': return 'green';
+      case 'bajo': return 'lightgreen';
       default: return 'gray';
     }
   };
@@ -104,7 +106,7 @@ const InteractionsScreen = () => {
           <Picker.Item label="Todos los tipos" value="todos" />
           <Picker.Item label="Alimentos" value="alimento" />
           <Picker.Item label="Medicamentos" value="medicamento" />
-          <Picker.Item label="Situaciones" value="situacion" />
+          <Picker.Item label="Situaciones" value="situacion2" />
         </Picker>
 
         <Picker
@@ -113,7 +115,9 @@ const InteractionsScreen = () => {
           onValueChange={setFiltroRiesgo}>
           <Picker.Item label="Todos los riesgos" value="todos" />
           <Picker.Item label="Alto riesgo" value="alto" />
+          <Picker.Item label="Medio-alto riesgo" value="medio-alto" />
           <Picker.Item label="Medio riesgo" value="medio" />
+          <Picker.Item label="Bajo-medio riesgo" value="bajo-medio" />
           <Picker.Item label="Bajo riesgo" value="bajo" />
         </Picker>
       </View>

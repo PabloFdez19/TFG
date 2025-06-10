@@ -1,33 +1,18 @@
 import * as SQLite from 'expo-sqlite';
+import datos from './datos';
+import situaciones from './situaciones';
 
-const interaccionesIniciales = [
-  {
-    nombre: 'Vitamina K (espinacas, brócoli)',
-    tipo: 'alimento',
-    descripcion: 'Puede disminuir el efecto del anticoagulante',
-    riesgo: 'medio',
-    accion_recomendada: 'Mantener un consumo consistente, no variar bruscamente la ingesta',
-  },
-  {
-    nombre: 'Ibuprofeno',
-    tipo: 'medicamento',
-    descripcion: 'Aumenta el riesgo de sangrado',
-    riesgo: 'alto',
-    accion_recomendada: 'Evitar su uso. Consultar alternativas con su médico',
-  },
-  {
-    nombre: 'Extracción dental',
-    tipo: 'situacion',
-    descripcion: 'Riesgo de sangrado prolongado',
-    riesgo: 'alto',
-    accion_recomendada: 'Informar al dentista sobre la medicación anticoagulante',
-  },
-];
+const RESET_DB_ON_START = true;
+
 
 const initializeDatabase = async () => {
   try {
     // Abrir la base de datos de forma asíncrona
     const db = await SQLite.openDatabaseAsync('anticoagulados.db');
+
+    if (RESET_DB_ON_START) {
+        await db.execAsync(`DROP TABLE IF EXISTS interacciones`);
+    }
     
     // Ejecutar las operaciones SQL de forma asíncrona
     await db.execAsync(`
@@ -40,6 +25,17 @@ const initializeDatabase = async () => {
         accion_recomendada TEXT
       );
     `);
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS situaciones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        situacion TEXT NOT NULL,
+        tipo TEXT NOT NULL,
+        nivel_riesgo TEXT NOT NULL,
+        acciones_inmediatas TEXT NOT NULL,
+        seguimiento TEXT NOT NULL,
+        prevencion TEXT NOT NULL
+      );
+    `);
     
     // Verificar si hay datos existentes
     const result = await db.getFirstAsync('SELECT COUNT(*) as total FROM interacciones');
@@ -47,7 +43,7 @@ const initializeDatabase = async () => {
     
     // Insertar datos iniciales si la tabla está vacía
     if (total === 0) {
-      for (const item of interaccionesIniciales) {
+      for (const item of datos) {
         await db.runAsync(
           `INSERT INTO interacciones 
           (nombre, tipo, descripcion, riesgo, accion_recomendada) 
@@ -58,6 +54,27 @@ const initializeDatabase = async () => {
             item.descripcion,
             item.riesgo,
             item.accion_recomendada,
+          ]
+        );
+      }
+    }
+    const result2 = await db.getFirstAsync('SELECT COUNT(*) as total FROM situaciones');
+    const total2 = result2.total;
+    
+    // Insertar datos iniciales si la tabla está vacía
+    if (total2 === 0) {
+      for (const item of situaciones) {
+        await db.runAsync(
+          `INSERT INTO situaciones
+          (situacion, tipo, nivel_riesgo, acciones_inmediatas, seguimiento, prevencion) 
+          VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            item.situacion,
+            tipo = situacion2,
+            item.nivel_riesgo,
+            item.acciones_inmediatas,
+            item.seguimiento,
+            item.prevencion,
           ]
         );
       }
