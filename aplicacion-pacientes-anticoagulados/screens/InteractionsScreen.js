@@ -10,6 +10,8 @@ const InteractionsScreen = () => {
   const [filtroRiesgo, setFiltroRiesgo] = useState('todos');
   const [interacciones, setInteracciones] = useState([]);
   const [interaccionesFiltradas, setInteraccionesFiltradas] = useState([]);
+  const [situaciones, setSituaciones] = useState([]);
+  const [situacionesFiltradas, setSituacionesFiltradas] = useState([]);
   const [db, setDb] = useState(null);
 
   useEffect(() => {
@@ -30,18 +32,22 @@ const InteractionsScreen = () => {
     if (!database) return;
 
     try {
-      const results = await database.getAllAsync('SELECT * FROM interacciones');
-      setInteracciones(results);
-      setInteraccionesFiltradas(results);
+      const interacciones = await database.getAllAsync('SELECT * FROM interacciones');
+      const situaciones = await database.getAllAsync('SELECT * FROM situaciones');
+      const results = [...interacciones, ...situaciones];
+      setInteracciones(results.filter(item => item.tipo !== 'situacion'));
+      setInteraccionesFiltradas(results.filter(item => item.tipo !== 'situacion'));
+      setSituaciones(results.filter(item => item.tipo === 'situacion'));
+      setSituacionesFiltradas(results.filter(item => item.tipo === 'situacion'));
     } catch (error) {
       console.log('Error al cargar interacciones: ', error);
     }
   };
 
   useEffect(() => {
-    if (!interacciones || interacciones.length === 0) return;
+    if ((!interacciones || interacciones.length === 0)&&(!situaciones || situaciones.length === 0)) return;
 
-    let resultados = [...interacciones];
+    let resultados = [...interacciones, ...situaciones];
 
     if (filtroTipo !== 'todos') {
       resultados = resultados.filter(item => item.tipo === filtroTipo);
@@ -55,12 +61,14 @@ const InteractionsScreen = () => {
       const textoBusqueda = busqueda.toLowerCase();
       resultados = resultados.filter(item =>
         (item.nombre && item.nombre.toLowerCase().includes(textoBusqueda)) ||
-        (item.descripcion && item.descripcion.toLowerCase().includes(textoBusqueda))
+        (item.descripcion && item.descripcion.toLowerCase().includes(textoBusqueda)) ||
+        (item.situacion && item.situacion.toLowerCase().includes(textoBusqueda))
       );
     }
 
-    setInteraccionesFiltradas(resultados);
-  }, [busqueda, filtroTipo, filtroRiesgo, interacciones]);
+    setInteraccionesFiltradas(resultados.filter(item => item.tipo !== 'situacion'));
+    setSituacionesFiltradas(resultados.filter(item => item.tipo === 'situacion'));
+  }, [busqueda, filtroTipo, filtroRiesgo, interacciones, situaciones]);
 
   const getColorRiesgo = (riesgo) => {
     switch (riesgo) {
@@ -74,20 +82,43 @@ const InteractionsScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={Interactions.itemContainer}>
-      <Text style={Interactions.nombre}>{item.nombre}</Text>
-      <Text style={Interactions.tipo}>{item.tipo.toUpperCase()}</Text>
-      <Text style={Interactions.descripcion}>{item.descripcion}</Text>
-      {item.riesgo && (
-        <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
-          Riesgo: {item.riesgo.toUpperCase()}
-        </Text>
-      )}
-      {item.accion_recomendada && (
-        <Text style={Interactions.accion}>Acción recomendada: {item.accion_recomendada}</Text>
-      )}
-    </View>
-  );
+  <View style={Interactions.itemContainer}>
+    {item.tipo === 'situacion' ? (
+      <>
+        <Text style={Interactions.nombre}>{item.situacion}</Text>
+
+        {item.riesgo && (
+          <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
+            Riesgo: {item.riesgo.toUpperCase()}
+          </Text>
+        )}
+        {item.acciones_inmediatas && (
+          <Text style={Interactions.accion}>!!Acciones inmediatas!!: {item.acciones_inmediatas}</Text>
+        )}
+        {item.seguimiento && (
+          <Text style={Interactions.accion}>Seguimiento: {item.seguimiento}</Text>
+        )}
+        {item.prevencion && (
+          <Text style={Interactions.accion}>Prevencion: {item.prevencion}</Text>
+        )}
+      </>
+    ) : (
+      <>
+        <Text style={Interactions.nombre}>{item.nombre}</Text>
+        <Text style={Interactions.tipo}>{item.tipo.toUpperCase()}</Text>
+        <Text style={Interactions.descripcion}>{item.descripcion}</Text>
+        {item.riesgo && (
+          <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
+            Riesgo: {item.riesgo.toUpperCase()}
+          </Text>
+        )}
+        {item.accion_recomendada && (
+          <Text style={Interactions.accion}>Acción recomendada: {item.accion_recomendada}</Text>
+        )}
+      </>
+    )}
+  </View>
+);
 
   return (
     <View style={Interactions.container}>
@@ -106,7 +137,7 @@ const InteractionsScreen = () => {
           <Picker.Item label="Todos los tipos" value="todos" />
           <Picker.Item label="Alimentos" value="alimento" />
           <Picker.Item label="Medicamentos" value="medicamento" />
-          <Picker.Item label="Situaciones" value="situacion2" />
+          <Picker.Item label="Situaciones" value="situacion" />
         </Picker>
 
         <Picker
@@ -123,9 +154,9 @@ const InteractionsScreen = () => {
       </View>
 
       <FlatList
-        data={interaccionesFiltradas}
+        data={[...interaccionesFiltradas, ...situacionesFiltradas]}
         renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => `${item.id}-${item.tipo}`}
         ListEmptyComponent={
           <Text style={Interactions.emptyText}>No se encontraron resultados</Text>
         }

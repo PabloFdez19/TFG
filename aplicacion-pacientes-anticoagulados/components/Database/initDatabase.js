@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import datos from './datos';
-import situaciones from './situaciones';
+import {datos, situaciones} from './datos';
 
 const RESET_DB_ON_START = true;
 
@@ -12,6 +11,7 @@ const initializeDatabase = async () => {
 
     if (RESET_DB_ON_START) {
         await db.execAsync(`DROP TABLE IF EXISTS interacciones`);
+        await db.execAsync(`DROP TABLE IF EXISTS situaciones`);
     }
     
     // Ejecutar las operaciones SQL de forma asíncrona
@@ -30,7 +30,7 @@ const initializeDatabase = async () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         situacion TEXT NOT NULL,
         tipo TEXT NOT NULL,
-        nivel_riesgo TEXT NOT NULL,
+        riesgo TEXT NOT NULL,
         acciones_inmediatas TEXT NOT NULL,
         seguimiento TEXT NOT NULL,
         prevencion TEXT NOT NULL
@@ -66,11 +66,11 @@ const initializeDatabase = async () => {
       for (const item of situaciones) {
         await db.runAsync(
           `INSERT INTO situaciones
-          (situacion, tipo, nivel_riesgo, acciones_inmediatas, seguimiento, prevencion) 
+          (situacion, tipo, riesgo, acciones_inmediatas, seguimiento, prevencion) 
           VALUES (?, ?, ?, ?, ?, ?)`,
           [
             item.situacion,
-            tipo = situacion2,
+            'situacion',
             item.nivel_riesgo,
             item.acciones_inmediatas,
             item.seguimiento,
