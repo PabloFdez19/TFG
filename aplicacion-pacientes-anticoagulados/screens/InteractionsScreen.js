@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Interactions from '../Styles/InteractionStyles.js';
-import initializeDatabase from '../components/Database/initDatabase.js';
+import * as SQLite from 'expo-sqlite';
 
 const InteractionsScreen = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -17,7 +17,7 @@ const InteractionsScreen = () => {
   useEffect(() => {
     const initDB = async () => {
       try {
-        const database = await initializeDatabase();
+        const database = await SQLite.openDatabaseAsync('anticoagulados.db');
         setDb(database);
         await cargarInteracciones(database);
       } catch (err) {
