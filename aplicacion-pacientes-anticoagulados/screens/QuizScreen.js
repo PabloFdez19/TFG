@@ -1,76 +1,146 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-
-const questions = [
-  {
-    id: 1,
-    question: '¿Qué es el INR?',
-    options: ['Un tipo de medicamento', 'Una medida de coagulación sanguínea', 'Una vitamina'],
-    correctAnswer: 'Una medida de coagulación sanguínea',
-  },
-  {
-    id: 2,
-    question: '¿Qué alimentos pueden alterar el INR?',
-    options: ['Manzanas', 'Espinacas', 'Pollo'],
-    correctAnswer: 'Espinacas',
-  },
-  // Agrega más preguntas aquí...
-];
+// QuizScreen.js
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import questions from '../components/Preguntas.js';
+import QuizStyles from '../Styles/QuizStyles.js';
 
 const QuizScreen = () => {
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAnswer = (selectedAnswer) => {
-    if (selectedAnswer === questions[currentQuestion].correctAnswer) {
-      setScore(score + 1);
-    }
+  // Seleccionar 15 preguntas aleatorias al cargar el componente
+  useEffect(() => {
+    setIsLoading(true);
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    setSelectedQuestions(shuffled.slice(0, 15));
+    setIsLoading(false);
+  }, []);
 
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setShowResult(true);
-    }
+  const handleAnswer = (selectedOption) => {
+    setSelectedAnswer(selectedOption);
+    
+    // Retraso para permitir ver la retroalimentación antes de avanzar
+    setTimeout(() => {
+      if (selectedOption === selectedQuestions[currentQuestion].correctAnswer) {
+        setScore(score + 1);
+      }
+      
+      setSelectedAnswer(null);
+      
+      if (currentQuestion < selectedQuestions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        setShowResult(true);
+      }
+    }, 800);
   };
 
+  const restartQuiz = () => {
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    setSelectedQuestions(shuffled.slice(0, 15));
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowResult(false);
+    setSelectedAnswer(null);
+  };
+
+  if (isLoading || selectedQuestions.length === 0) {
+    return (
+      <View style={QuizStyles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2E86C1" />
+        <Text style={QuizStyles.loadingText}>Preparando el cuestionario...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={QuizStyles.container}>
       {showResult ? (
-        <View>
-          <Text style={styles.resultText}>Tu puntuación: {score} / {questions.length}</Text>
-          <Button title="Reiniciar cuestionario" onPress={() => { setCurrentQuestion(0); setScore(0); setShowResult(false); }} />
+        <View style={QuizStyles.resultContainer}>
+          <Text style={QuizStyles.resultTitle}>Resultado Final</Text>
+          
+          <View style={QuizStyles.scoreContainer}>
+            <Text style={QuizStyles.scoreText}>{score} / {selectedQuestions.length}</Text>
+            <Text style={QuizStyles.scoreSubtitle}>Respuestas correctas</Text>
+          </View>
+          
+          <View style={QuizStyles.scoreBar}>
+            <View 
+              style={[
+                QuizStyles.scoreProgress, 
+                {width: `${(score / selectedQuestions.length) * 100}%`}
+              ]}
+            />
+          </View>
+          
+          <Text style={QuizStyles.resultMessage}>
+            {score >= selectedQuestions.length * 0.7 
+              ? "¡Excelente! Demuestras un gran conocimiento sobre anticoagulantes." 
+              : "¡Buen intento! Sigue aprendiendo sobre tu tratamiento anticoagulante."}
+          </Text>
+          
+          <TouchableOpacity style={QuizStyles.restartButton} onPress={restartQuiz}>
+            <Text style={QuizStyles.restartButtonText}>Volver a Intentar</Text>
+          </TouchableOpacity>
         </View>
       ) : (
-        <View>
-          <Text style={styles.questionText}>{questions[currentQuestion].question}</Text>
-          {questions[currentQuestion].options.map((option, index) => (
-            <Button key={index} title={option} onPress={() => handleAnswer(option)} />
-          ))}
+        <View style={QuizStyles.questionContainer}>
+          <View style={QuizStyles.progressContainer}>
+            <Text style={QuizStyles.progressText}>Pregunta {currentQuestion + 1} de {selectedQuestions.length}</Text>
+            <View style={QuizStyles.progressBar}>
+              <View 
+                style={[
+                  QuizStyles.progressFill, 
+                  {width: `${((currentQuestion + 1) / selectedQuestions.length) * 100}%`}
+                ]}
+              />
+            </View>
+          </View>
+          
+          <Text style={QuizStyles.questionText}>{selectedQuestions[currentQuestion].question}</Text>
+          
+          <View style={QuizStyles.optionsContainer}>
+            {selectedQuestions[currentQuestion].options.map((option, index) => {
+              const isSelected = selectedAnswer === option;
+              const isCorrect = option === selectedQuestions[currentQuestion].correctAnswer;
+              
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    QuizStyles.optionButton,
+                    isSelected && isCorrect && QuizStyles.correctOption,
+                    isSelected && !isCorrect && QuizStyles.incorrectOption,
+                  ]}
+                  onPress={() => handleAnswer(option)}
+                  disabled={selectedAnswer !== null}
+                >
+                  <Text 
+                    style={[
+                      QuizStyles.optionText,
+                      isSelected && QuizStyles.selectedOptionText
+                    ]}
+                  >
+                    {option}
+                  </Text>
+                  {isSelected && isCorrect && (
+                    <Text style={QuizStyles.feedbackText}>✓ Correcto</Text>
+                  )}
+                  {isSelected && !isCorrect && (
+                    <Text style={QuizStyles.feedbackText}>✗ Incorrecto</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  questionText: {
-    fontSize: 20,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  resultText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-});
 
 export default QuizScreen;

@@ -324,7 +324,7 @@ const situaciones = [
   },
   {
     situacion: 'Traumatismo craneoencefálico (incluso leve)',
-    nivel_riesgo: 'altísimo',
+    nivel_riesgo: 'alto', // Cambiado de "altísimo"
     acciones_inmediatas: [
       'Acudir inmediatamente a urgencias aunque no haya síntomas',
       'Realizar TAC craneal urgente',
@@ -348,7 +348,7 @@ const situaciones = [
   },
   {
     situacion: 'Procedimientos invasivos programados',
-    nivel_riesgo: 'variable',
+    nivel_riesgo: 'medio-alto', // Cambiado de "variable"
     acciones_inmediatas: [
       'Coordinar con hematólogo/cardiólogo 1 semana antes',
       'Evaluar riesgo hemorrágico vs. tromboembólico',
@@ -360,7 +360,7 @@ const situaciones = [
   },
   {
     situacion: 'Diarrea/vómitos persistentes (>24h)',
-    nivel_riesgo: 'medio-alto',
+    nivel_riesgo: 'medio', // Cambiado de "medio-alto"
     acciones_inmediatas: [
       'Control INR urgente (posible alteración absorción)',
       'Hidratación oral/intravenosa',
@@ -372,7 +372,7 @@ const situaciones = [
   },
   {
     situacion: 'Hemorragia intracraneal confirmada',
-    nivel_riesgo: 'vital',
+    nivel_riesgo: 'alto', // Cambiado de "vital"
     acciones_inmediatas: [
       'Reversión inmediata con PCC/K vitamina IV',
       'Manejo en unidad de ictus/neurocríticos',
@@ -384,7 +384,7 @@ const situaciones = [
   },
   {
     situacion: 'INR >5 sin sangrado',
-    nivel_riesgo: 'alto',
+    nivel_riesgo: 'medio-alto', // Cambiado de "alto"
     acciones_inmediatas: [
       'Suspender 1-2 dosis de warfarina',
       'Administrar vitamina K oral (1-2.5mg) según protocolo',
@@ -396,7 +396,7 @@ const situaciones = [
   },
   {
     situacion: 'INR >9 sin sangrado',
-    nivel_riesgo: 'altísimo',
+    nivel_riesgo: 'alto', // Cambiado de "altísimo"
     acciones_inmediatas: [
       'Administrar vitamina K (2.5-5mg VO/IV)',
       'Considerar PCC si factores de riesgo hemorrágico',
@@ -408,7 +408,7 @@ const situaciones = [
   },
   {
     situacion: 'Hematomas extensos/spontáneos',
-    nivel_riesgo: 'medio-alto',
+    nivel_riesgo: 'medio', // Cambiado de "medio-alto"
     acciones_inmediatas: [
       'Aplicar compresión fría intermitente',
       'Evaluar INR y hemoglobina',
@@ -420,7 +420,7 @@ const situaciones = [
   },
   {
     situacion: 'Embarazo (confirmado o sospecha)',
-    nivel_riesgo: 'especial',
+    nivel_riesgo: 'alto', // Cambiado de "especial"
     acciones_inmediatas: [
       'Suspender warfarina inmediatamente (teratogénica)',
       'Cambiar a HBPM a dosis terapéuticas',
@@ -432,7 +432,7 @@ const situaciones = [
   },
   {
     situacion: 'Accidente isquémico cerebral agudo',
-    nivel_riesgo: 'complejo',
+    nivel_riesgo: 'alto', // Cambiado de "complejo"
     acciones_inmediatas: [
       'Evaluar ventana terapéutica para trombólisis',
       'Reversión anticoagulación si INR elevado',
@@ -444,7 +444,7 @@ const situaciones = [
   },
   {
     situacion: 'Interacción medicamentosa aguda',
-    nivel_riesgo: 'variable',
+    nivel_riesgo: 'medio', // Cambiado de "variable"
     acciones_inmediatas: [
       'Suspender fármaco interactuante si posible',
       'Control INR en 24h',
@@ -456,7 +456,7 @@ const situaciones = [
   },
   {
     situacion: 'Cirugía mayor no programada',
-    nivel_riesgo: 'crítico',
+    nivel_riesgo: 'alto', // Cambiado de "crítico"
     acciones_inmediatas: [
       'Administrar PCC/vitamina K según INR y urgencia',
       'Coordinar con anestesista y cirujano',
@@ -468,7 +468,7 @@ const situaciones = [
   },
   {
     situacion: 'Caída con impacto significativo',
-    nivel_riesgo: 'alto',
+    nivel_riesgo: 'medio-alto', // Cambiado de "alto"
     acciones_inmediatas: [
       'Evaluación traumatológica completa',
       'Control INR urgente',
@@ -478,7 +478,7 @@ const situaciones = [
     seguimiento: 'Repetir TAC a las 24h si inicial negativo con alta sospecha',
     prevencion: 'Modificación entorno domiciliario para prevenir caídas'
   }
-]
+];
 
 export{
     datos,
