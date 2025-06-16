@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
     {
       title: "Recordatorios de Medicación",
       icon: <Ionicons name="alarm" size={28} color="#2A7F9F" />,
-      screen: 'Reminders'
+      screen: 'Medication'
     },
     {
       title: "Modo Cuidador",
