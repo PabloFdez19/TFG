@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Button, FlatList } from 'reac
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { Ionicons } from '@expo/vector-icons';
-import AddMedicationScreen from './AddMedicationScreen.js';
 
 const MedicationsScreen = ({ navigation }) => {
   const [medications, setMedications] = useState([]);
@@ -50,7 +49,7 @@ const MedicationsScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Button
         title="Agregar Nueva Medicación"
-        onPress={() => navigation.navigate('AddMedicationScreen')}
+        onPress={() => navigation.navigate('AddMedication')}
       />
       
       <FlatList
@@ -76,7 +75,7 @@ const MedicationsScreen = ({ navigation }) => {
       />
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('AddMedicationScreen')}
+        onPress={() => navigation.navigate('AddMedication')}
       >
         <Ionicons name="add" size={30} color="white" />
         <Text style={styles.addButtonText}>Añadir Medicación</Text>
@@ -90,6 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+    paddingTop: 65,
   },
   medItem: {
     backgroundColor: 'white',

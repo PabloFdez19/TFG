@@ -8,6 +8,7 @@ import InteractionsScreen from './screens/InteractionsScreen.js';
 import QuizScreen from './screens/QuizScreen.js';
 import MedicationsScreen from './screens/MedicationScreen.js';
 import initializeDatabase from './components/Database/initDatabase';
+import AddMedicationScreen from './screens/AddMedicationScreen.js';
 import CaregiverScreen from './screens/CaregiverScreen.js';
 import 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
@@ -90,7 +91,16 @@ export default function App() {
         />
         <Stack.Screen name="Interactions" component={InteractionsScreen} />
         <Stack.Screen name="Quiz" component={QuizScreen} />
-        <Stack.Screen name="Medication" component={MedicationsScreen} />
+        <Stack.Screen 
+          name="Medications" 
+          component={MedicationsScreen} 
+          options={{ title: 'Mis Medicamentos' }}
+        />
+        <Stack.Screen 
+          name="AddMedication" 
+          component={AddMedicationScreen} 
+          options={{ title: 'Añadir Medicamento' }}
+        />
         <Stack.Screen name="Caregiver" component={CaregiverScreen} />
       </Stack.Navigator>
     </NavigationContainer>

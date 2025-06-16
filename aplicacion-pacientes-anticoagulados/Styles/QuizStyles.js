@@ -10,6 +10,7 @@ const QuizStyles = StyleSheet.create({
     backgroundColor: '#F8F9F9',
     paddingVertical: 20,
     paddingHorizontal: 16,
+    paddingTop: 65,
   },
   loadingContainer: {
     flex: 1,
