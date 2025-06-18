@@ -15,15 +15,17 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
+      shouldShowBanner: true,
       shouldPlaySound: true,
-      shouldSetBadge: false,
+      shouldSetBadge: true,
+      shouldShowList: true,
     }),
   });
 
@@ -60,15 +62,48 @@ export default function App() {
           lightColor: '#FF231F7C',
         });
       }
+      // Configurar notificaciones para iOS
+      if (Platform.OS === 'ios') {
+        await Notifications.setNotificationCategoryAsync('default', {
+          actions: [
+            {
+              identifier: 'SNOOZE',
+              buttonTitle: 'Snooze',
+              options: { opensAppToForeground: true },
+            },
+          ],
+        });
+      }
     };
 
     setupNotifications();
 
     // Escuchar notificaciones recibidas
-    notificationListener.current = Notifications.addNotificationReceivedListener();
+    notificationListener.current = Notifications.addNotificationReceivedListener(async notification => {
+      const { data } = notification.request.content;
+
+      if (data?.isSingleTime && data?.medicationId) {
+        try {
+          const stored = await AsyncStorage.getItem('medications') || '[]';
+          let medications = JSON.parse(stored);
+          medications = medications.map(med =>
+            med.id === data.medicationId
+              ? { ...med, notificationId: null, reminder: null }
+              : med
+          );
+          await AsyncStorage.setItem('medications', JSON.stringify(medications));
+          console.log('Recordatorio de una sola vez eliminado');
+        } catch (err) {
+          console.error('Error eliminando recordatorio una vez mostrado:', err);
+        }
+      }
+    });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
+      // CORRECCIÓN: Usar el método remove() directamente de la suscripción
+      if (notificationListener.current) {
+        notificationListener.current.remove();
+      }
     };
   }, []);
 
