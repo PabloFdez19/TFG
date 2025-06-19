@@ -1,32 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import AnticoagulantEducation from '../components/AnticoagulantEducation';
 import { MaterialIcons } from '@expo/vector-icons';
 import { EducationStyle } from '../Styles/EducationStyles';
-import INR from '../components/INR';
-import Riesgos from '../components/Riesgos';
-import InformacionValidada from '../components/informacionValidada';
+import contenidoData from '../components/contenido_educativo.json';
 
 const sections = [
   {
     title: "Tratamiento Anticoagulante",
     icon: "medication",
-    content: <AnticoagulantEducation />
+    content: contenidoData['AnticoagulantEducation']
   },
   {
     title: "Factores que afectan el INR",
     icon: "warning",
-    content: <INR />,
+    content: ['INR']
   },
   {
     title: "Prevención de Riesgos",
     icon: "security",
-    content: <Riesgos />
+    content: ['Riesgos']
   },
   {
     title: "Información Validada",
     icon: "verified",
-    content: <InformacionValidada />
+    content: ['InformacionValidada']
   },
 ];
 
@@ -51,7 +48,7 @@ const EducationScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
         <TouchableOpacity style={EducationStyle.button} onPress={() => navigation.goBack()}>
-        <Text style={EducationStyle.buttonText}>Atras</Text>
+          <Text style={EducationStyle.buttonText}>Atras</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

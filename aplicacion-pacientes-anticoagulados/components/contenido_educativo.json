@@ -1,0 +1,618 @@
+{
+  "AnticoagulantEducation": [
+    {
+      "tipo": "title",
+      "texto": "¿Qué es el tratamiento anticoagulante?"
+    },
+    {
+      "tipo": "text",
+      "texto": "El tratamiento anticoagulante consiste en tomar medicamentos que ayudan a prevenir la formación de coágulos en la sangre. Estos coágulos pueden bloquear venas o arterias y causar problemas como infartos o derrames cerebrales. No eliminan los coágulos existentes, pero sí evitan que se formen nuevos."
+    },
+    {
+      "tipo": "title",
+      "texto": "¿Por qué es importante seguir este tratamiento?"
+    },
+    {
+      "tipo": "text",
+      "texto": "Muchas personas mayores toman anticoagulantes por afecciones como arritmias, trombosis, embolias o por tener una prótesis en el corazón. Este tratamiento ayuda a evitar complicaciones graves."
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Recomendaciones importantes:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Tomar el medicamento siempre a la misma hora."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "No olvidar ninguna dosis."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Evitar ciertos alimentos y medicamentos sin consultar."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Hacerse análisis de sangre periódicamente."
+    },
+    {
+      "tipo": "title",
+      "texto": "Estudio de Izazola-Conde y colaboradores"
+    },
+    {
+      "tipo": "text",
+      "texto": "Un estudio realizado en 2014 encontró que muchos pacientes con anticoagulantes no entendían bien su tratamiento. Se les enseñó cómo cuidarse mejor, y los que recibieron educación mejoraron notablemente su conocimiento. Esto muestra que aprender sobre el tratamiento es clave para usarlo correctamente."
+    },
+    {
+      "tipo": "title",
+      "texto": "Consejos prácticos"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Siga las indicaciones de su médico al pie de la letra."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Avise a médicos y dentistas que toma anticoagulantes."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Evite caídas o golpes que puedan causar sangrados."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Pregunte antes de tomar nuevos medicamentos o suplementos."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga una dieta estable, especialmente con alimentos como espinaca o brócoli."
+    },
+    {
+      "tipo": "title",
+      "texto": "¿Tiene dudas?"
+    },
+    {
+      "tipo": "text",
+      "texto": "Siempre puede hablar con su médico o enfermera. Ellos están para ayudarle. También puede pedir folletos o materiales educativos que le expliquen con claridad todo lo que necesita saber."
+    },
+    {
+      "tipo": "footer",
+      "texto": "Recuerde: entender su tratamiento le ayuda a vivir más seguro y con mejor calidad de vida."
+    }
+  ],
+  "InformacionValidada": [
+    {
+      "tipo": "title",
+      "texto": "Guía Práctica para Pacientes Anticoagulados"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Control de su Tratamiento"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Realice sus análisis de sangre (INR) con la frecuencia que le indique su médico"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga un registro de sus resultados y dosis"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "No modifique su dosis sin consultar"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Recordatorios Útiles"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Tome su medicación siempre a la misma hora"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Configure alarmas o use aplicaciones de recordatorio"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Programe sus próximas citas y análisis con anticipación"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Alimentación"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga un consumo regular de vegetales verdes (no los elimine, pero sea constante)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Limite el consumo de alcohol (máximo 1-2 bebidas ocasionales)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Consulte antes de tomar suplementos vitamínicos o herbales"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Señales de Alerta"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Sangrado que no para en 10 minutos"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Sangrado en orina o heces (orina roja/heces negras)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Dolor de cabeza intenso e inusual"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Hinchazón o dolor en extremidades"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Fiebre persistente o malestar general"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Precauciones Diarias"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Use maquinilla eléctrica en lugar de navaja"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Cepíllese con suavidad usando cepillo blando"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Utilice guantes para trabajos manuales"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Use calzado seguro para evitar caídas"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Medicamentos que deben evitarse"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Aspirina (salvo indicación médica)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Ibuprofeno y otros antiinflamatorios"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Algunos antibióticos (siempre consulte)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Suplementos herbales no autorizados"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "En caso de emergencia"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Lleve siempre su tarjeta de anticoagulado"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Informe a cualquier profesional de salud que le atienda"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Tenga a mano los teléfonos de emergencia"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Consejos para no olvidar"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Use pastilleros semanales para organizar su medicación"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Pida recordatorios por mensaje de texto si su centro lo ofrece"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Designe a un familiar como \"ayudante\" para recordatorios"
+    },
+    {
+      "tipo": "footer",
+      "texto": "Recuerde: Un buen control de su anticoagulación le permite vivir con normalidad y seguridad. Ante cualquier duda, consulte a su médico o enfermera."
+    }
+  ],
+  "Riesgos": [
+    {
+      "tipo": "title",
+      "texto": "Conocimientos esenciales sobre anticoagulación oral"
+    },
+    {
+      "tipo": "text",
+      "texto": "Estos son los aspectos clave que todo paciente anticoagulado debe conocer para manejar su tratamiento con seguridad:"
+    },
+    {
+      "tipo": "title",
+      "texto": "1. Propósito del tratamiento"
+    },
+    {
+      "tipo": "text",
+      "texto": "Los anticoagulantes orales previenen la formación de coágulos sanguíneos peligrosos que pueden causar:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Accidentes cerebrovasculares"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Trombosis venosa profunda"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Embolias pulmonares"
+    },
+    {
+      "tipo": "text",
+      "texto": "Es fundamental entender por qué necesita esta medicación para seguir el tratamiento correctamente."
+    },
+    {
+      "tipo": "title",
+      "texto": "2. Monitoreo del INR"
+    },
+    {
+      "tipo": "text",
+      "texto": "Los pacientes deben comprender estos aspectos sobre el INR:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Qué es el INR y por qué es importante"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Con qué frecuencia deben hacerse pruebas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Cómo interpretar los resultados"
+    },
+    {
+      "tipo": "text",
+      "texto": "Cada paciente tiene un rango objetivo de INR específico que debe mantener."
+    },
+    {
+      "tipo": "title",
+      "texto": "3. Manejo de la medicación"
+    },
+    {
+      "tipo": "text",
+      "texto": "Aspectos importantes sobre la toma de anticoagulantes:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Qué hacer si olvida una dosis"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Cómo ajustar la dosis según indicación médica"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Por qué no debe cambiar la dosis por su cuenta"
+    },
+    {
+      "tipo": "text",
+      "texto": "Nunca suspenda su anticoagulante sin consultar primero con su médico."
+    },
+    {
+      "tipo": "title",
+      "texto": "4. Interacciones importantes"
+    },
+    {
+      "tipo": "text",
+      "texto": "Estas sustancias pueden afectar su tratamiento:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Medicamentos de venta libre"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Antibióticos"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Antiinflamatorios no esteroideos"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Suplementos herbales"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Alcohol"
+    },
+    {
+      "tipo": "title",
+      "texto": "5. Signos de alerta"
+    },
+    {
+      "tipo": "text",
+      "texto": "Reconozca estas señales que requieren atención médica:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Sangrado excesivo o prolongado"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Hematomas inexplicables"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Dolor de cabeza intenso o repentino"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Dificultad para respirar"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Dolor o hinchazón en extremidades"
+    },
+    {
+      "tipo": "title",
+      "texto": "6. Situaciones especiales"
+    },
+    {
+      "tipo": "text",
+      "texto": "Tenga en cuenta estas circunstancias que requieren precaución:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Procedimientos dentales"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Cirugías o intervenciones médicas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Viajes (llevar medicación suficiente)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Actividades con riesgo de traumatismos"
+    },
+    {
+      "tipo": "title",
+      "texto": "7. Recomendaciones de estilo de vida"
+    },
+    {
+      "tipo": "text",
+      "texto": "Para convivir mejor con su tratamiento:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga una actividad física moderada y segura"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Limite el consumo de alcohol"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Extreme precauciones para evitar caídas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Use identificación médica de anticoagulado"
+    },
+    {
+      "tipo": "title",
+      "texto": "Beneficios de estar bien informado"
+    },
+    {
+      "tipo": "text",
+      "texto": "Los pacientes que comprenden su tratamiento:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Logran mejor control de su coagulación"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Tienen menos complicaciones"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Siguen mejor su tratamiento"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Disfrutan de mejor calidad de vida"
+    },
+    {
+      "tipo": "footer",
+      "texto": "Esta información es general. Consulte siempre con su médico para recomendaciones personalizadas."
+    }
+  ],
+  "INR": [
+    {
+      "tipo": "title",
+      "texto": "¿Qué son los anticoagulantes orales?"
+    },
+    {
+      "tipo": "text",
+      "texto": "Los anticoagulantes orales como el Sintrom® (acenocumarol) o Warfarina son medicamentos que previenen la formación de coágulos sanguíneos. Actúan inhibiendo la vitamina K, necesaria para la coagulación."
+    },
+    {
+      "tipo": "title",
+      "texto": "Importancia del control del INR"
+    },
+    {
+      "tipo": "text",
+      "texto": "El INR (International Normalized Ratio) mide el tiempo de coagulación de su sangre. Según el estudio de Núñez-Cózar y García-Vázquez (2015), solo el 44.4% de los pacientes conocía correctamente su rango terapéutico de INR."
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Debe realizarse controles periódicos según indicación médica"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga su INR dentro del rango recomendado para evitar complicaciones"
+    },
+    {
+      "tipo": "title",
+      "texto": "Recomendaciones nutricionales"
+    },
+    {
+      "tipo": "text",
+      "texto": "Según Vallejo-Mora y Olveira-Fuster (2018), la dieta es fundamental en pacientes anticoagulados:"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Alimentos con vitamina K (moderar su consumo):"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Verduras de hoja verde (espinacas, coles, brócoli)"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Hígado y vísceras"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Aceites vegetales (soja, canola, oliva)"
+    },
+    {
+      "tipo": "subtitle",
+      "texto": "Recomendaciones generales:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Mantenga un consumo constante de alimentos con vitamina K"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Evite cambios bruscos en la dieta"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Limite el consumo de alcohol"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Consulte antes tomar suplementos nutricionales"
+    },
+    {
+      "tipo": "title",
+      "texto": "Interacciones medicamentosas"
+    },
+    {
+      "tipo": "text",
+      "texto": "El estudio de Núñez-Cózar y García-Vázquez (2015) mostró que solo el 38.9% de los pacientes conocía las interacciones con otros medicamentos:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Antibióticos pueden aumentar el efecto anticoagulante"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Antiinflamatorios aumentan el riesgo de sangrado"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Hierbas como ginseng, ginkgo biloba o manzanilla pueden afectar"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Siempre consulte antes de tomar nuevos medicamentos"
+    },
+    {
+      "tipo": "title",
+      "texto": "Conocimientos sobre el tratamiento"
+    },
+    {
+      "tipo": "text",
+      "texto": "Según el estudio mencionado, existen importantes lagunas de conocimiento:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Solo el 44.4% sabía el nombre de su anticoagulante"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "El 55.6% desconocía qué hacer si olvidaba una dosis"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "El 61.1% no sabía reconocer signos de sobredosis"
+    },
+    {
+      "tipo": "title",
+      "texto": "Recomendaciones prácticas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Tome la medicación siempre a la misma hora"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Si olvida una dosis, consulte las instrucciones específicas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Reconozca signos de alarma: sangrado anormal, dolor de cabeza intenso, hematomas"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Lleve siempre una identificación de que está anticoagulado"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Informe a todos sus profesionales sanitarios"
+    },
+    {
+      "tipo": "title",
+      "texto": "¿Dónde acudir si tiene dudas?"
+    },
+    {
+      "tipo": "text",
+      "texto": "Como muestra el estudio, la educación es fundamental. No dude en consultar con:"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Su médico de referencia"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Enfermera de anticoagulación"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Farmacéutico"
+    },
+    {
+      "tipo": "bullet",
+      "texto": "Unidades especializadas en anticoagulación"
+    },
+    {
+      "tipo": "footer",
+      "texto": "Recuerde: Un buen conocimiento de su tratamiento mejora su seguridad y calidad de vida."
+    }
+  ]
+}
