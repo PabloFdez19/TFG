@@ -13,17 +13,17 @@ const sections = [
   {
     title: "Factores que afectan el INR",
     icon: "warning",
-    content: ['INR']
+    content: contenidoData['INR']
   },
   {
     title: "Prevención de Riesgos",
     icon: "security",
-    content: ['Riesgos']
+    content: contenidoData['Riesgos']
   },
   {
     title: "Información Validada",
     icon: "verified",
-    content: ['InformacionValidada']
+    content: contenidoData['InformacionValidada']
   },
 ];
 

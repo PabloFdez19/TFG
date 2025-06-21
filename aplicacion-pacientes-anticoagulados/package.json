@@ -38,7 +38,8 @@
     "react-native-tts": "^4.1.1",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "^0.20.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "expo-speech": "~13.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
