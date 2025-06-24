@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
@@ -43,7 +43,16 @@ const EducationDetail = ({ route, navigation }) => {
     Speech.stop();
     setIsSpeaking(false);
   };
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      detenerVoz();
+    });
 
+    // Limpieza al desmontar el componente
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
   const renderItem = (item, index) => {
     const estilo =
       item.tipo === 'title'
@@ -76,7 +85,7 @@ const EducationDetail = ({ route, navigation }) => {
         {content.map(renderItem)}
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={EducationDetailStyle.buttonContainer}>
         {isSpeaking ? (
           <Button 
             title="⏹ Detener lectura" 
@@ -93,16 +102,16 @@ const EducationDetail = ({ route, navigation }) => {
       </View>
 
       {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-          <Text style={styles.hintText}>
+        <View style={EducationDetailStyle.errorContainer}>
+          <Text style={EducationDetailStyle.errorText}>{error}</Text>
+          <Text style={EducationDetailStyle.hintText}>
             Asegúrate de tener instalado un motor de voz en español en tu dispositivo
           </Text>
         </View>
       )}
 
       <TouchableOpacity 
-        style={[EducationDetailStyle.button, styles.closeButton]} 
+        style={EducationDetailStyle.button} 
         onPress={() => {
           Speech.stop();
           navigation.goBack();
@@ -113,35 +122,5 @@ const EducationDetail = ({ route, navigation }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    marginVertical: 15,
-    paddingHorizontal: 10,
-    minHeight: 50
-  },
-  errorContainer: {
-    backgroundColor: '#ffebee',
-    padding: 15,
-    borderRadius: 8,
-    marginHorizontal: 10,
-    marginVertical: 10
-  },
-  errorText: {
-    color: '#c62828',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  hintText: {
-    color: '#555',
-    fontSize: 12,
-    marginTop: 5,
-    textAlign: 'center'
-  },
-  closeButton: {
-    marginTop: 10,
-    backgroundColor: '#2c3e50'
-  }
-});
 
 export default EducationDetail;

@@ -108,6 +108,29 @@ const EducationDetailStyle = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '600',
     },
+    buttonContainer: {
+        marginVertical: 15,
+        paddingHorizontal: 10,
+        minHeight: 50
+    },
+    errorContainer: {
+        backgroundColor: '#ffebee',
+        padding: 15,
+        borderRadius: 8,
+        marginHorizontal: 10,
+        marginVertical: 10
+    },
+    errorText: {
+        color: '#c62828',
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    hintText: {
+        color: '#555',
+        fontSize: 12,
+        marginTop: 5,
+        textAlign: 'center'
+    }
 });
 
 const AnticoagulantEducationStyle = StyleSheet.create({
