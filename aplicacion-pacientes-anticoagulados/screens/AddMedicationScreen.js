@@ -42,7 +42,7 @@ const AddMedicationScreen = ({ route, navigation }) => {
   }, [route.params?.medication]);
 
   const toggleDay = (dayIndex) => {
-    setSelectedDays(prev => 
+    setSelectedDays(prev =>
       prev.includes(dayIndex) ? prev.filter(d => d !== dayIndex) : [...prev, dayIndex].sort()
     );
   };
@@ -117,10 +117,12 @@ const AddMedicationScreen = ({ route, navigation }) => {
         'Medicamento Guardado', '¿Quieres programar un recordatorio?',
         [
           { text: 'Ahora no', onPress: () => navigation.goBack(), style: 'cancel' },
-          { text: 'Sí, programar', onPress: () => {
+          {
+            text: 'Sí, programar', onPress: () => {
               setMedicationToEdit(newMedication);
               navigation.setOptions({ title: 'Añadir Recordatorio' });
-          }}
+            }
+          }
         ]
       );
     } catch (error) { console.error('Error saving new medication:', error); }
@@ -158,64 +160,64 @@ const AddMedicationScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-        <Text style={styles.label}>Nombre del Medicamento</Text>
-        <TextInput
-            style={[styles.input, shouldShowReminderForm && styles.disabledInput]}
-            value={medName}
-            onChangeText={setMedName}
-            editable={!shouldShowReminderForm}
-            placeholder="Ej: Paracetamol"
-        />
-      
-        <Text style={styles.label}>Dosis</Text>
-        <TextInput
-            style={[styles.input, shouldShowReminderForm && styles.disabledInput]}
-            value={doses.toString()}
-            onChangeText={text => setDoses(Math.max(1, Number(text) || 1))}
-            editable={!shouldShowReminderForm}
-            keyboardType="numeric"
-        />
-      
+      <Text style={styles.label}>Nombre del Medicamento</Text>
+      <TextInput
+        style={[styles.input, shouldShowReminderForm && styles.disabledInput]}
+        value={medName}
+        onChangeText={setMedName}
+        editable={!shouldShowReminderForm}
+        placeholder="Ej: Paracetamol"
+      />
+
+      <Text style={styles.label}>Dosis</Text>
+      <TextInput
+        style={[styles.input, shouldShowReminderForm && styles.disabledInput]}
+        value={doses.toString()}
+        onChangeText={text => setDoses(Math.max(1, Number(text) || 1))}
+        editable={!shouldShowReminderForm}
+        keyboardType="numeric"
+      />
+
       {shouldShowReminderForm && (
         <>
-            <Text style={styles.label}>Hora del Recordatorio</Text>
-            <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
-                <Ionicons name="time-outline" size={30} color="#2980b9"/>
-                <Text style={styles.timeButtonText}>{time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</Text>
-            </TouchableOpacity>
+          <Text style={styles.label}>Hora del Recordatorio</Text>
+          <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
+            <Ionicons name="time-outline" size={30} color="#2980b9" />
+            <Text style={styles.timeButtonText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          </TouchableOpacity>
 
-            {showTimePicker && (
-                <DateTimePicker value={time} mode="time" display="spinner" onChange={(e, selected) => { setShowTimePicker(false); if (selected) setTime(selected); }}/>
-            )}
-            
-            <View style={styles.separator} />
-            
-            <Text style={styles.label}>Frecuencia</Text>
-            <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Solo una vez</Text>
-                <Switch value={isSingleTime} onValueChange={v => { setIsSingleTime(v); if(v) setIsRecurrent(false); }} trackColor={{false: '#ccc', true: '#27ae60'}}/>
-            </View>
-            <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Diario</Text>
-                <Switch value={!isSingleTime && !isRecurrent} onValueChange={v => { if(v) { setIsSingleTime(false); setIsRecurrent(false); }}} trackColor={{false: '#ccc', true: '#27ae60'}}/>
-            </View>
-            <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Días específicos</Text>
-                <Switch value={isRecurrent} onValueChange={v => { setIsRecurrent(v); if(v) setIsSingleTime(false); }} disabled={isSingleTime} trackColor={{false: '#ccc', true: '#27ae60'}}/>
-            </View>
+          {showTimePicker && (
+            <DateTimePicker value={time} mode="time" display="spinner" onChange={(e, selected) => { setShowTimePicker(false); if (selected) setTime(selected); }} />
+          )}
 
-            {isRecurrent && !isSingleTime && (
-                <View style={styles.daysContainer}>
-                {daysOfWeek.map((day, index) => (
-                    <TouchableOpacity key={index} style={[styles.dayButton, selectedDays.includes(index) && styles.dayButtonSelected]} onPress={() => toggleDay(index)}>
-                        <Text style={[styles.dayButtonText, selectedDays.includes(index) && styles.dayButtonTextSelected]}>{day}</Text>
-                    </TouchableOpacity>
-                ))}
-                </View>
-            )}
+          <View style={styles.separator} />
+
+          <Text style={styles.label}>Frecuencia</Text>
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Solo una vez</Text>
+            <Switch value={isSingleTime} onValueChange={v => { setIsSingleTime(v); if (v) setIsRecurrent(false); }} trackColor={{ false: '#ccc', true: '#27ae60' }} />
+          </View>
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Diario</Text>
+            <Switch value={!isSingleTime && !isRecurrent} onValueChange={v => { if (v) { setIsSingleTime(false); setIsRecurrent(false); } }} trackColor={{ false: '#ccc', true: '#27ae60' }} />
+          </View>
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Días específicos</Text>
+            <Switch value={isRecurrent} onValueChange={v => { setIsRecurrent(v); if (v) setIsSingleTime(false); }} disabled={isSingleTime} trackColor={{ false: '#ccc', true: '#27ae60' }} />
+          </View>
+
+          {isRecurrent && !isSingleTime && (
+            <View style={styles.daysContainer}>
+              {daysOfWeek.map((day, index) => (
+                <TouchableOpacity key={index} style={[styles.dayButton, selectedDays.includes(index) && styles.dayButtonSelected]} onPress={() => toggleDay(index)}>
+                  <Text style={[styles.dayButtonText, selectedDays.includes(index) && styles.dayButtonTextSelected]}>{day}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </>
       )}
-      
+
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Ionicons name="checkmark-circle-outline" size={30} color="white" />
         <Text style={styles.saveButtonText}>{!medicationToEdit ? "Guardar Medicamento" : "Guardar Recordatorio"}</Text>
