@@ -1,60 +1,100 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const CaregiverScreen = () => {
-  const [patientName, setPatientName] = useState('');
-  const [medicationDetails, setMedicationDetails] = useState('');
-
-  const handleSave = () => {
-    alert('Información guardada correctamente');
-  };
+const CaregiverScreen = ({ navigation }) => {
+  const menuItems = [
+    {
+      title: "Añadir Medicación",
+      icon: <Ionicons name="add-circle-outline" size={28} color="#2A7F9F" />,
+      screen: 'AddMedication'
+    },
+    {
+      title: "Gestionar Medicaciones",
+      icon: <Ionicons name="list-outline" size={28} color="#2A7F9F" />,
+      screen: 'manageMedications'
+    },
+    {
+      title: "Gestionar Recordatorios",
+      icon: <Ionicons name="alarm-outline" size={28} color="#2A7F9F" />,
+      screen: 'manageReminders'
+    }
+  ];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modo Cuidador</Text>
-      <Text style={styles.label}>Nombre del Paciente:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ingresa el nombre del paciente"
-        value={patientName}
-        onChangeText={setPatientName}
-      />
-      <Text style={styles.label}>Detalles de la Medicación:</Text>
-      <TextInput
-        style={[styles.input, { height: 100 }]}
-        placeholder="Ingresa los detalles de la medicación"
-        multiline
-        value={medicationDetails}
-        onChangeText={setMedicationDetails}
-      />
-      <Button title="Guardar" onPress={handleSave} />
-    </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Modo Cuidador</Text>
+        <Text style={styles.subtitle}>Gestión completa de medicaciones</Text>
+      </View>
+
+      <View style={styles.menuContainer}>
+        {menuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.menuCard}
+            onPress={() => navigation.navigate(item.screen)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.iconContainer}>
+              {item.icon}
+            </View>
+            <Text style={styles.menuText}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexGrow: 1,
     padding: 20,
+    backgroundColor: '#fff',
+    paddingTop: 70,
+  },
+  header: {
+    marginBottom: 30,
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2A7F9F',
+    textAlign: 'center',
   },
-  label: {
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  menuContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  menuCard: {
+    width: '48%',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  iconContainer: {
+    marginBottom: 15,
+  },
+  menuText: {
     fontSize: 18,
-    marginBottom: 10,
-    alignSelf: 'flex-start',
-  },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
   },
 });
 

@@ -10,6 +10,8 @@ import MedicationsScreen from './screens/MedicationScreen.js';
 import initializeDatabase from './components/Database/initDatabase';
 import AddMedicationScreen from './screens/AddMedicationScreen.js';
 import CaregiverScreen from './screens/CaregiverScreen.js';
+import ManageMedications from './components/ManageMedications.js';
+import ManageReminders from './components/ManageReminders.js';
 import 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
@@ -21,13 +23,13 @@ const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      shouldShowList: true,
-    }),
-  });
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowList: true,
+  }),
+});
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -126,14 +128,16 @@ export default function App() {
         />
         <Stack.Screen name="Interactions" component={InteractionsScreen} />
         <Stack.Screen name="Quiz" component={QuizScreen} />
-        <Stack.Screen 
-          name="Medications" 
-          component={MedicationsScreen} 
+        <Stack.Screen name="manageMedications" component={ManageMedications} />
+        <Stack.Screen name="manageReminders" component={ManageReminders} />
+        <Stack.Screen
+          name="Medications"
+          component={MedicationsScreen}
           options={{ title: 'Mis Medicamentos' }}
         />
-        <Stack.Screen 
-          name="AddMedication" 
-          component={AddMedicationScreen} 
+        <Stack.Screen
+          name="AddMedication"
+          component={AddMedicationScreen}
           options={{ title: 'Añadir Medicamento' }}
         />
         <Stack.Screen name="Caregiver" component={CaregiverScreen} />

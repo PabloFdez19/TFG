@@ -22,6 +22,7 @@
     "expo-linear-gradient": "~14.1.5",
     "expo-location": "^18.1.5",
     "expo-notifications": "~0.31.3",
+    "expo-speech": "~13.1.7",
     "expo-splash-screen": "^0.30.9",
     "expo-sqlite": "~15.2.12",
     "expo-status-bar": "~2.2.3",
@@ -38,8 +39,7 @@
     "react-native-tts": "^4.1.1",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "^0.20.0",
-    "uuid": "^11.1.0",
-    "expo-speech": "~13.1.7"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
