@@ -87,17 +87,19 @@ const EducationDetail = ({ route, navigation }) => {
 
       <View style={EducationDetailStyle.buttonContainer}>
         {isSpeaking ? (
-          <Button 
-            title="⏹ Detener lectura" 
-            onPress={detenerVoz} 
-            color="#e74c3c"
-          />
+          <TouchableOpacity 
+            style={[EducationDetailStyle.button_narrator, EducationDetailStyle.stopButton]}
+            onPress={detenerVoz}
+          >
+            <Text style={EducationDetailStyle.buttonText_narrator}>⏹ Detener lectura</Text>
+          </TouchableOpacity>
         ) : (
-          <Button 
-            title="🔊 Leer en voz alta" 
-            onPress={leerContenido} 
-            disabled={isSpeaking}
-          />
+          <TouchableOpacity 
+            style={[EducationDetailStyle.button_narrator, EducationDetailStyle.speakButton]}
+            onPress={leerContenido}
+          >
+            <Text style={EducationDetailStyle.buttonText_narrator}>🔊 Leer en voz alta</Text>
+          </TouchableOpacity>
         )}
       </View>
 

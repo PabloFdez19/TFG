@@ -107,6 +107,26 @@ const EducationDetailStyle = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
         fontWeight: '600',
+        borderRadius: 10,
+    },
+    button_narrator: {
+        padding: 20,
+        marginTop: 25,
+        borderRadius: 10,
+        alignSelf: 'center',
+        width: '60%',
+    },
+    buttonText_narrator: {
+        fontSize: 20,
+        color: '#fff',
+        textAlign: 'center',
+        fontWeight: '600',
+    },
+    speakButton: {
+        backgroundColor: '#4CAF50',  // Verde para "hablar"
+    },
+    stopButton: {
+        backgroundColor: '#F44336',  // Rojo para "detener"
     },
     buttonContainer: {
         marginVertical: 15,

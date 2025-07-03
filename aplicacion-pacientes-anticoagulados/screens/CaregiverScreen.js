@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   menuCard: {
-    width: '48%',
+    width: '100%',
+    height: 120,
     backgroundColor: '#f8f9fa',
     borderRadius: 15,
     padding: 20,

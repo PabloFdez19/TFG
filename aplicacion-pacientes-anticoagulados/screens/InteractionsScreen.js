@@ -1,8 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, TextInput, FlatList, Text, Modal, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Interactions from '../Styles/InteractionStyles.js';
 import * as SQLite from 'expo-sqlite';
+
+const FiltroPopup = ({ 
+  label, 
+  selectedValue, 
+  onValueChange, 
+  items,
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (
+    <View style={Interactions.pickerContainer}>
+      <Text style={Interactions.label}>{label}</Text>
+      
+      <TouchableOpacity 
+        style={[
+          Interactions.button,
+          { 
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }
+        ]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={Interactions.buttonText}>
+          {items.find(item => item.value === selectedValue)?.label || 'Seleccionar'}
+        </Text>
+        <Icon name="chevron-down" size={20} color="#666" />
+      </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={Interactions.modalOverlay}>
+          <View style={Interactions.modalContainer}>
+            <Text style={Interactions.modalTitle}>Seleccionar {label}</Text>
+            
+            {items.map((item) => (
+              <TouchableOpacity
+                key={item.value}
+                style={[
+                  Interactions.optionButton,
+                  selectedValue === item.value && Interactions.optionButtonSelected
+                ]}
+                onPress={() => {
+                  onValueChange(item.value);
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={[
+                  Interactions.optionText,
+                  selectedValue === item.value && Interactions.optionTextSelected
+                ]}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            
+            <TouchableOpacity
+              style={Interactions.cancelButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={Interactions.cancelButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
 
 const InteractionsScreen = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -12,13 +85,27 @@ const InteractionsScreen = () => {
   const [interaccionesFiltradas, setInteraccionesFiltradas] = useState([]);
   const [situaciones, setSituaciones] = useState([]);
   const [situacionesFiltradas, setSituacionesFiltradas] = useState([]);
-  const [db, setDb] = useState(null);
+
+  const tipos = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Alimentos', value: 'alimento' },
+    { label: 'Medicamentos', value: 'medicamento' },
+    { label: 'Situaciones', value: 'situacion' }
+  ];
+
+  const riesgos = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Alto', value: 'alto' },
+    { label: 'Medio-alto', value: 'medio-alto' },
+    { label: 'Medio', value: 'medio' },
+    { label: 'Bajo-medio', value: 'bajo-medio' },
+    { label: 'Bajo', value: 'bajo' }
+  ];
 
   useEffect(() => {
     const initDB = async () => {
       try {
         const database = await SQLite.openDatabaseAsync('anticoagulados.db');
-        setDb(database);
         await cargarInteracciones(database);
       } catch (err) {
         console.error('Error al inicializar DB:', err);
@@ -82,75 +169,68 @@ const InteractionsScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-  <View style={Interactions.itemContainer}>
-    {item.tipo === 'situacion' ? (
-      <>
-        <Text style={Interactions.nombre}>{item.situacion}</Text>
+    <View style={Interactions.itemContainer}>
+      {item.tipo === 'situacion' ? (
+        <>
+          <Text style={Interactions.nombre}>{item.situacion}</Text>
 
-        {item.riesgo && (
-          <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
-            Riesgo: {item.riesgo.toUpperCase()}
-          </Text>
-        )}
-        {item.acciones_inmediatas && (
-          <Text style={Interactions.accion}>!!Acciones inmediatas!!: {item.acciones_inmediatas}</Text>
-        )}
-        {item.seguimiento && (
-          <Text style={Interactions.accion}>Seguimiento: {item.seguimiento}</Text>
-        )}
-        {item.prevencion && (
-          <Text style={Interactions.accion}>Prevencion: {item.prevencion}</Text>
-        )}
-      </>
-    ) : (
-      <>
-        <Text style={Interactions.nombre}>{item.nombre}</Text>
-        <Text style={Interactions.tipo}>{item.tipo.toUpperCase()}</Text>
-        <Text style={Interactions.descripcion}>{item.descripcion}</Text>
-        {item.riesgo && (
-          <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
-            Riesgo: {item.riesgo.toUpperCase()}
-          </Text>
-        )}
-        {item.accion_recomendada && (
-          <Text style={Interactions.accion}>Acción recomendada: {item.accion_recomendada}</Text>
-        )}
-      </>
-    )}
-  </View>
-);
+          {item.riesgo && (
+            <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
+              Riesgo: {item.riesgo.toUpperCase()}
+            </Text>
+          )}
+          {item.acciones_inmediatas && (
+            <Text style={Interactions.accion}>!!Acciones inmediatas!!: {item.acciones_inmediatas}</Text>
+          )}
+          {item.seguimiento && (
+            <Text style={Interactions.accion}>Seguimiento: {item.seguimiento}</Text>
+          )}
+          {item.prevencion && (
+            <Text style={Interactions.accion}>Prevencion: {item.prevencion}</Text>
+          )}
+        </>
+      ) : (
+        <>
+          <Text style={Interactions.nombre}>{item.nombre}</Text>
+          <Text style={Interactions.tipo}>{item.tipo.toUpperCase()}</Text>
+          <Text style={Interactions.descripcion}>{item.descripcion}</Text>
+          {item.riesgo && (
+            <Text style={[Interactions.riesgo, { color: getColorRiesgo(item.riesgo) }]}>
+              Riesgo: {item.riesgo.toUpperCase()}
+            </Text>
+          )}
+          {item.accion_recomendada && (
+            <Text style={Interactions.accion}>Acción recomendada: {item.accion_recomendada}</Text>
+          )}
+        </>
+      )}
+    </View>
+  );
 
   return (
     <View style={Interactions.container}>
       <TextInput
         style={Interactions.buscador}
-        placeholder="Buscar alimento, medicamento o situación..."
+        placeholder="Buscar"
         value={busqueda}
         onChangeText={setBusqueda}
       />
 
-      <View style={Interactions.filtrosContainer}>
-        <Picker
+      {/* Contenedor de filtros más compacto */}
+      <View style={[Interactions.pickersRow, { marginTop: -8 }]}>
+        <FiltroPopup
+          label="Tipo"
           selectedValue={filtroTipo}
-          style={Interactions.filtro}
-          onValueChange={setFiltroTipo}>
-          <Picker.Item label="Todos los tipos" value="todos" />
-          <Picker.Item label="Alimentos" value="alimento" />
-          <Picker.Item label="Medicamentos" value="medicamento" />
-          <Picker.Item label="Situaciones" value="situacion" />
-        </Picker>
+          onValueChange={setFiltroTipo}
+          items={tipos}
+        />
 
-        <Picker
+        <FiltroPopup
+          label="Riesgo"
           selectedValue={filtroRiesgo}
-          style={Interactions.filtro}
-          onValueChange={setFiltroRiesgo}>
-          <Picker.Item label="Todos los riesgos" value="todos" />
-          <Picker.Item label="Alto riesgo" value="alto" />
-          <Picker.Item label="Medio-alto riesgo" value="medio-alto" />
-          <Picker.Item label="Medio riesgo" value="medio" />
-          <Picker.Item label="Bajo-medio riesgo" value="bajo-medio" />
-          <Picker.Item label="Bajo riesgo" value="bajo" />
-        </Picker>
+          onValueChange={setFiltroRiesgo}
+          items={riesgos}
+        />
       </View>
 
       <FlatList

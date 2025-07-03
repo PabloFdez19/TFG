@@ -1,8 +1,10 @@
 // QuizScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import questions from '../components/Preguntas.js';
 import QuizStyles from '../Styles/QuizStyles.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const QuizScreen = () => {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
@@ -11,6 +13,8 @@ const QuizScreen = () => {
   const [showResult, setShowResult] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExiting, setIsExiting] = useState(false);
+  const navigation = useNavigation();
 
   // Seleccionar 15 preguntas aleatorias al cargar el componente
   useEffect(() => {
@@ -23,7 +27,6 @@ const QuizScreen = () => {
   const handleAnswer = (selectedOption) => {
     setSelectedAnswer(selectedOption);
     
-    // Retraso para permitir ver la retroalimentación antes de avanzar
     setTimeout(() => {
       if (selectedOption === selectedQuestions[currentQuestion].correctAnswer) {
         setScore(score + 1);
@@ -35,11 +38,101 @@ const QuizScreen = () => {
         setCurrentQuestion(currentQuestion + 1);
       } else {
         setShowResult(true);
+        clearSavedQuiz(); // Limpiar guardado al completar
       }
     }, 800);
   };
 
-  const restartQuiz = () => {
+  useEffect(() => {
+    const loadSavedQuiz = async () => {
+      setIsLoading(true);
+      try {
+        const savedQuiz = await AsyncStorage.getItem('@saved_quiz');
+        
+        if (savedQuiz) {
+          const { questions: savedQuestions, currentIndex, currentScore } = JSON.parse(savedQuiz);
+          setSelectedQuestions(savedQuestions);
+          setCurrentQuestion(currentIndex);
+          setScore(currentScore);
+          Alert.alert(
+            'Quiz guardado encontrado',
+            '¿Deseas continuar donde lo dejaste?',
+            [
+              { text: 'Nuevo quiz', onPress: () => restartQuiz() },
+              { text: 'Continuar', onPress: () => console.log('Continuando quiz guardado') }
+            ]
+          );
+        } else {
+          restartQuiz();
+        }
+      } catch (error) {
+        console.error('Error cargando quiz:', error);
+        restartQuiz();
+      }
+      setIsLoading(false);
+    };
+
+    loadSavedQuiz();
+  }, []);
+
+  // Función para guardar el progreso
+  const saveProgress = async () => {
+    try {
+      const quizState = {
+        questions: selectedQuestions,
+        currentIndex: currentQuestion,
+        currentScore: score
+      };
+      await AsyncStorage.setItem('@saved_quiz', JSON.stringify(quizState));
+    } catch (error) {
+      console.error('Error saving quiz:', error);
+      throw error;
+    }
+  };
+
+  // Función para salir del quiz
+  const handleExit = async () => {
+    setIsExiting(true);
+    
+    try {
+      // Guardar progreso antes de salir
+      await saveProgress();
+      
+      // Navegar hacia atrás
+      navigation.goBack();
+      
+      // Mostrar confirmación
+      Alert.alert(
+        'Progreso guardado',
+        'Puedes continuar donde lo dejaste cuando vuelvas',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Error al salir:', error);
+      Alert.alert(
+        'Error',
+        'No se pudo guardar tu progreso. ¿Deseas salir de todas formas?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => navigation.goBack() }
+        ]
+      );
+    } finally {
+      setIsExiting(false);
+    }
+  };
+
+  // Función para borrar quiz guardado al completar
+  const clearSavedQuiz = async () => {
+    try {
+      await AsyncStorage.removeItem('@saved_quiz');
+    } catch (error) {
+      console.error('Error clearing quiz:', error);
+    }
+  };
+
+  const restartQuiz = async () => {
+    await clearSavedQuiz();
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
     setSelectedQuestions(shuffled.slice(0, 15));
     setCurrentQuestion(0);
@@ -138,6 +231,17 @@ const QuizScreen = () => {
             })}
           </View>
         </View>
+      )}
+      {!showResult && (
+        <TouchableOpacity 
+          style={QuizStyles.exitButton}
+          onPress={handleExit}
+          disabled={isExiting}
+        >
+          <Text style={QuizStyles.exitButtonText}>
+            {isExiting ? 'Guardando...' : 'Salir y Guardar Progreso'}
+          </Text>
+        </TouchableOpacity>
       )}
     </ScrollView>
   );
