@@ -12,6 +12,8 @@ import AddMedicationScreen from './screens/AddMedicationScreen.js';
 import CaregiverScreen from './screens/CaregiverScreen.js';
 import ManageMedications from './components/ManageMedications.js';
 import ManageReminders from './components/ManageReminders.js';
+import HistoryScreen from './screens/HistoryScreen';
+import QuizHomeScreen from './screens/QuizHomeScreen';
 import 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
@@ -127,7 +129,9 @@ export default function App() {
           }}
         />
         <Stack.Screen name="Interactions" component={InteractionsScreen} />
-        <Stack.Screen name="Quiz" component={QuizScreen} />
+        <Stack.Screen name="QuizHome" component={QuizHomeScreen} options={{ title: 'Quiz' }} />
+        <Stack.Screen name="Quiz" component={QuizScreen} options={{ title: 'Cuestionario' }} />
+        <Stack.Screen name="History" component={HistoryScreen} options={{ title: 'Historial' }} />
         <Stack.Screen name="manageMedications" component={ManageMedications} />
         <Stack.Screen name="manageReminders" component={ManageReminders} />
         <Stack.Screen

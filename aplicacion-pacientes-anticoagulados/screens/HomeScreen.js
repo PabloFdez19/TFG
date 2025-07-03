@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
     {
       title: "Cuestionario de Conocimiento",
       icon: <MaterialIcons name="quiz" size={28} color="#2A7F9F" />,
-      screen: 'Quiz'
+      screen: 'QuizHome'
     },
     {
       title: "Recordatorios de Medicación",

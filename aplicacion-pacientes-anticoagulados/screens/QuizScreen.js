@@ -1,5 +1,5 @@
 // QuizScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import questions from '../components/Preguntas.js';
 import QuizStyles from '../Styles/QuizStyles.js';
@@ -24,6 +24,23 @@ const QuizScreen = () => {
     setIsLoading(false);
   }, []);
 
+  const saveAttempt = useCallback(async () => {
+    const newAttempt = {
+      date: new Date().toISOString(),
+      score: score,
+      total: selectedQuestions.length,
+    };
+  
+    try {
+      const history = await AsyncStorage.getItem('@quiz_history');
+      let attempts = history ? JSON.parse(history) : [];
+      attempts.push(newAttempt);
+      await AsyncStorage.setItem('@quiz_history', JSON.stringify(attempts));
+    } catch (error) {
+      console.error('Error saving attempt:', error);
+    }
+  }, [score, selectedQuestions.length]);
+
   const handleAnswer = (selectedOption) => {
     setSelectedAnswer(selectedOption);
     
@@ -38,10 +55,15 @@ const QuizScreen = () => {
         setCurrentQuestion(currentQuestion + 1);
       } else {
         setShowResult(true);
-        clearSavedQuiz(); // Limpiar guardado al completar
       }
     }, 800);
   };
+  useEffect(() => {
+    if (showResult) {
+      saveAttempt();
+      clearSavedQuiz(); // Limpiar guardado al completar
+    }
+  }, [showResult, saveAttempt]);
 
   useEffect(() => {
     const loadSavedQuiz = async () => {
