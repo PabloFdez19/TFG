@@ -265,6 +265,15 @@ const QuizScreen = () => {
           </Text>
         </TouchableOpacity>
       )}
+      <TouchableOpacity 
+          style={QuizStyles.exitButton}
+          onPress={navigation.goBack}
+          disabled={isExiting}
+        > 
+        <View>
+          <Text style={QuizStyles.exitButtonText}> Salir</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

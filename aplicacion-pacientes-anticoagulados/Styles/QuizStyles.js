@@ -19,7 +19,7 @@ const QuizStyles = StyleSheet.create({
     backgroundColor: '#F8F9F9',
   },
   exitButton: {
-    backgroundColor: '#2E86C1',
+    backgroundColor: '#2a86ff',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -35,11 +35,11 @@ const QuizStyles = StyleSheet.create({
   },
   exitButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   loadingText: {
-    fontSize: 20,
+    fontSize: 22,
     marginTop: 20,
     color: '#2C3E50',
   },
@@ -48,7 +48,7 @@ const QuizStyles = StyleSheet.create({
     width: '100%',
   },
   progressText: {
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 8,
     color: '#2C3E50',
     fontWeight: '500',
@@ -91,7 +91,7 @@ const QuizStyles = StyleSheet.create({
     elevation: 2,
   },
   optionText: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#2C3E50',
     lineHeight: 26,
   },

@@ -1,11 +1,13 @@
 // HistoryScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const HistoryScreen = () => {
   const [attempts, setAttempts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -41,7 +43,14 @@ const HistoryScreen = () => {
       ) : (
         attempts.map((attempt, index) => (
           <View key={index} style={styles.attemptContainer}>
-            <Text style={styles.dateText}>{new Date(attempt.date).toLocaleDateString()}</Text>
+            <Text style={styles.dateText}>{new Date(attempt.date).toLocaleString('es-ES', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            })}</Text>
             <Text style={styles.scoreText}>Puntuación: {attempt.score}/{attempt.total}</Text>
             <View style={styles.scoreBar}>
               <View 
@@ -54,6 +63,14 @@ const HistoryScreen = () => {
           </View>
         ))
       )}
+      <TouchableOpacity 
+          style={styles.exitButton}
+          onPress={navigation.goBack}
+        > 
+        <View>
+          <Text style={styles.exitButtonText}> Salir</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -63,6 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+    paddingTop: 70,
   },
   title: {
     fontSize: 24,
@@ -99,6 +117,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 20,
+  },
+  exitButton: {
+    backgroundColor: '#2a86ff',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignSelf: 'stretch',
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  exitButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
