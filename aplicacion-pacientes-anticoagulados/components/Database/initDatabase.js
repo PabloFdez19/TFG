@@ -9,10 +9,10 @@ const initializeDatabase = async () => {
     // Abrir la base de datos de forma asíncrona
     const db = await SQLite.openDatabaseAsync('anticoagulados.db');
 
-    if (RESET_DB_ON_START) {
-        await db.execAsync(`DROP TABLE IF EXISTS interacciones`);
-        await db.execAsync(`DROP TABLE IF EXISTS situaciones`);
-    }
+    // if (RESET_DB_ON_START) {
+    //     await db.execAsync(`DROP TABLE IF EXISTS interacciones`);
+    //     await db.execAsync(`DROP TABLE IF EXISTS situaciones`);
+    // }
     
     // Ejecutar las operaciones SQL de forma asíncrona
     await db.execAsync(`

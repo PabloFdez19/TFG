@@ -313,168 +313,98 @@ const situaciones = [
   {
     situacion: 'Sangrado activo (epistaxis, gingivorragia, hematuria)',
     nivel_riesgo: 'alto',
-    acciones_inmediatas: [
-      'Aplicar presión local directa durante 10-15 min',
-      'Usar hielo en zona de sangrado (excepto heridas craneofaciales)',
-      'Mantener posición elevada del área afectada',
-      'Si no cede en 20 min, acudir a urgencias'
-    ],
+    acciones_inmediatas: `Aplicar presión local directa durante 10-15 min\nUsar hielo en zona de sangrado (excepto heridas craneofaciales)\nMantener posición elevada del área afectada\nSi no cede en 20 min, acudir a urgencias`,
     seguimiento: 'Control INR dentro de 24-48 horas',
     prevencion: 'Evitar maniobras traumáticas (sonarse fuerte, cepillado dental agresivo)'
   },
   {
     situacion: 'Traumatismo craneoencefálico (incluso leve)',
-    nivel_riesgo: 'alto', // Cambiado de "altísimo"
-    acciones_inmediatas: [
-      'Acudir inmediatamente a urgencias aunque no haya síntomas',
-      'Realizar TAC craneal urgente',
-      'Considerar reversión anticoagulación según protocolo',
-      'Monitorización neurológica estrecha'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Acudir inmediatamente a urgencias aunque no haya síntomas\nRealizar TAC craneal urgente\nConsiderar reversión anticoagulación según protocolo\nMonitorización neurológica estrecha`,
     seguimiento: 'Control INR seriado y evaluación por neurología',
     prevencion: 'Uso de protecciones en actividades de riesgo'
   },
   {
     situacion: 'Hemorragia digestiva (hematemesis, melenas)',
     nivel_riesgo: 'alto',
-    acciones_inmediatas: [
-      'Ayuno absoluto',
-      'Acudir a urgencias inmediatamente',
-      'Preparar hemograma, coagulación y grupo sanguíneo',
-      'Considerar endoscopia urgente'
-    ],
+    acciones_inmediatas: `Ayuno absoluto\nAcudir a urgencias inmediatamente\nPreparar hemograma, coagulación y grupo sanguíneo\nConsiderar endoscopia urgente`,
     seguimiento: 'Gastroenterología en 72h tras evento agudo',
     prevencion: 'Profilaxis con IBP si historia previa de úlcera'
   },
   {
     situacion: 'Procedimientos invasivos programados',
-    nivel_riesgo: 'medio-alto', // Cambiado de "variable"
-    acciones_inmediatas: [
-      'Coordinar con hematólogo/cardiólogo 1 semana antes',
-      'Evaluar riesgo hemorrágico vs. tromboembólico',
-      'Suspensión temporal según protocolo (generalmente 3-5 días antes)',
-      'Puente con HBPM si indicado'
-    ],
+    nivel_riesgo: 'medio-alto',
+    acciones_inmediatas: `Coordinar con hematólogo/cardiólogo 1 semana antes\nEvaluar riesgo hemorrágico vs. tromboembólico\nSuspensión temporal según protocolo (generalmente 3-5 días antes)\nPuente con HBPM si indicado`,
     seguimiento: 'Reiniciar anticoagulación 24-48h post-procedimiento según sangrado',
     prevencion: 'Planificación multidisciplinar anticipada'
   },
   {
     situacion: 'Diarrea/vómitos persistentes (>24h)',
-    nivel_riesgo: 'medio', // Cambiado de "medio-alto"
-    acciones_inmediatas: [
-      'Control INR urgente (posible alteración absorción)',
-      'Hidratación oral/intravenosa',
-      'Ajustar dosis según INR y estado clínico',
-      'Considerar anticoagulación parenteral si intolerancia oral prolongada'
-    ],
+    nivel_riesgo: 'medio',
+    acciones_inmediatas: `Control INR urgente (posible alteración absorción)\nHidratación oral/intravenosa\nAjustar dosis según INR y estado clínico\nConsiderar anticoagulación parenteral si intolerancia oral prolongada`,
     seguimiento: 'Monitorizar INR cada 48h hasta normalización',
     prevencion: 'Tratamiento precoz de gastroenteritis'
   },
   {
     situacion: 'Hemorragia intracraneal confirmada',
-    nivel_riesgo: 'alto', // Cambiado de "vital"
-    acciones_inmediatas: [
-      'Reversión inmediata con PCC/K vitamina IV',
-      'Manejo en unidad de ictus/neurocríticos',
-      'Suspender anticoagulante',
-      'Evaluar reanudación tras 2-4 semanas según riesgo'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Reversión inmediata con PCC/K vitamina IV\nManejo en unidad de ictus/neurocríticos\nSuspender anticoagulante\nEvaluar reanudación tras 2-4 semanas según riesgo`,
     seguimiento: 'RMN cerebral a los 7 días y seguimiento neurológico',
     prevencion: 'Control estricto de PA y evitar fluctuaciones bruscas de INR'
   },
   {
     situacion: 'INR >5 sin sangrado',
-    nivel_riesgo: 'medio-alto', // Cambiado de "alto"
-    acciones_inmediatas: [
-      'Suspender 1-2 dosis de warfarina',
-      'Administrar vitamina K oral (1-2.5mg) según protocolo',
-      'Reiniciar con dosis reducida (10-20% menos)',
-      'Control INR en 24-48h'
-    ],
+    nivel_riesgo: 'medio-alto',
+    acciones_inmediatas: `Suspender 1-2 dosis de warfarina\nAdministrar vitamina K oral (1-2.5mg) según protocolo\nReiniciar con dosis reducida (10-20% menos)\nControl INR en 24-48h`,
     seguimiento: 'Determinar causa (cambios dieta, medicación, cumplimiento)',
     prevencion: 'Educación sobre adherencia y factores modificables'
   },
   {
     situacion: 'INR >9 sin sangrado',
-    nivel_riesgo: 'alto', // Cambiado de "altísimo"
-    acciones_inmediatas: [
-      'Administrar vitamina K (2.5-5mg VO/IV)',
-      'Considerar PCC si factores de riesgo hemorrágico',
-      'Suspender warfarina hasta INR terapéutico',
-      'Monitorización hospitalaria si comorbilidades'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Administrar vitamina K (2.5-5mg VO/IV)\nConsiderar PCC si factores de riesgo hemorrágico\nSuspender warfarina hasta INR terapéutico\nMonitorización hospitalaria si comorbilidades`,
     seguimiento: 'Reevaluar esquema terapéutico a largo plazo',
     prevencion: 'Automonitorización INR si disponible'
   },
   {
     situacion: 'Hematomas extensos/spontáneos',
-    nivel_riesgo: 'medio', // Cambiado de "medio-alto"
-    acciones_inmediatas: [
-      'Aplicar compresión fría intermitente',
-      'Evaluar INR y hemoglobina',
-      'Considerar ecografía si sospecha de hematoma organizado',
-      'Ajustar dosis si INR elevado'
-    ],
+    nivel_riesgo: 'medio',
+    acciones_inmediatas: `Aplicar compresión fría intermitente\nEvaluar INR y hemoglobina\nConsiderar ecografía si sospecha de hematoma organizado\nAjustar dosis si INR elevado`,
     seguimiento: 'Control evolutivo cada 48h hasta resolución',
     prevencion: 'Evitar actividades con riesgo de traumatismo'
   },
   {
     situacion: 'Embarazo (confirmado o sospecha)',
-    nivel_riesgo: 'alto', // Cambiado de "especial"
-    acciones_inmediatas: [
-      'Suspender warfarina inmediatamente (teratogénica)',
-      'Cambiar a HBPM a dosis terapéuticas',
-      'Control ginecológico urgente',
-      'Manejo multidisciplinar (hematólogo-obstetra)'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Suspender warfarina inmediatamente (teratogénica)\nCambiar a HBPM a dosis terapéuticas\nControl ginecológico urgente\nManejo multidisciplinar (hematólogo-obstetra)`,
     seguimiento: 'Monitorización fetal estricta',
     prevencion: 'Anticoncepción efectiva en edad fértil'
   },
   {
     situacion: 'Accidente isquémico cerebral agudo',
-    nivel_riesgo: 'alto', // Cambiado de "complejo"
-    acciones_inmediatas: [
-      'Evaluar ventana terapéutica para trombólisis',
-      'Reversión anticoagulación si INR elevado',
-      'Neuroimagen urgente (TAC/RM difusión-perfusión)',
-      'Manejo en unidad de ictus'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Evaluar ventana terapéutica para trombólisis\nReversión anticoagulación si INR elevado\nNeuroimagen urgente (TAC/RM difusión-perfusión)\nManejo en unidad de ictus`,
     seguimiento: 'Reiniciar anticoagulación a las 2-4 semanas según evolución',
     prevencion: 'Control óptimo de INR en rango terapéutico'
   },
   {
     situacion: 'Interacción medicamentosa aguda',
-    nivel_riesgo: 'medio', // Cambiado de "variable"
-    acciones_inmediatas: [
-      'Suspender fármaco interactuante si posible',
-      'Control INR en 24h',
-      'Ajustar dosis warfarina según necesidad',
-      'Documentar interacción para futuras prescripciones'
-    ],
+    nivel_riesgo: 'medio',
+    acciones_inmediatas: `Suspender fármaco interactuante si posible\nControl INR en 24h\nAjustar dosis warfarina según necesidad\nDocumentar interacción para futuras prescripciones`,
     seguimiento: 'Monitorización frecuente hasta estabilización',
     prevencion: 'Revisar sistemáticamente nueva medicación'
   },
   {
     situacion: 'Cirugía mayor no programada',
-    nivel_riesgo: 'alto', // Cambiado de "crítico"
-    acciones_inmediatas: [
-      'Administrar PCC/vitamina K según INR y urgencia',
-      'Coordinar con anestesista y cirujano',
-      'Considerar puente con HBPM post-quirúrgico',
-      'Monitorizar sangrado intraoperatorio'
-    ],
+    nivel_riesgo: 'alto',
+    acciones_inmediatas: `Administrar PCC/vitamina K según INR y urgencia\nCoordinar con anestesista y cirujano\nConsiderar puente con HBPM post-quirúrgico\nMonitorizar sangrado intraoperatorio`,
     seguimiento: 'Reinicio anticoagulación cuando riesgo hemorrágico controlado',
     prevencion: 'Portar identificación de paciente anticoagulado'
   },
   {
     situacion: 'Caída con impacto significativo',
-    nivel_riesgo: 'medio-alto', // Cambiado de "alto"
-    acciones_inmediatas: [
-      'Evaluación traumatológica completa',
-      'Control INR urgente',
-      'Neuroimagen si síntomas neurológicos',
-      'Observación 24h por riesgo sangrado tardío'
-    ],
+    nivel_riesgo: 'medio-alto',
+    acciones_inmediatas: `Evaluación traumatológica completa\nControl INR urgente\nNeuroimagen si síntomas neurológicos\nObservación 24h por riesgo sangrado tardío`,
     seguimiento: 'Repetir TAC a las 24h si inicial negativo con alta sospecha',
     prevencion: 'Modificación entorno domiciliario para prevenir caídas'
   }

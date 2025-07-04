@@ -43,6 +43,9 @@ const CaregiverScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.buttonText}>Atras</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -73,6 +76,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  button: {
+    backgroundColor: '#2a86ff',
+    padding: 20,
+    marginTop: 25,
+    borderRadius: 10,
+    alignSelf: 'center',
+    width: '60%',
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '600',
+    borderRadius: 10,
   },
   menuCard: {
     width: '100%',

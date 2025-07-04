@@ -180,13 +180,19 @@ const InteractionsScreen = () => {
             </Text>
           )}
           {item.acciones_inmediatas && (
-            <Text style={Interactions.accion}>!!Acciones inmediatas!!: {item.acciones_inmediatas}</Text>
+            <Text style={[Interactions.base, Interactions.accionInmediata]}>
+              !!Acciones inmediatas!!: {item.acciones_inmediatas}
+            </Text>
           )}
           {item.seguimiento && (
-            <Text style={Interactions.accion}>Seguimiento: {item.seguimiento}</Text>
+            <Text style={[Interactions.base, Interactions.seguimiento]}>
+              Seguimiento: {item.seguimiento}
+            </Text>
           )}
           {item.prevencion && (
-            <Text style={Interactions.accion}>Prevencion: {item.prevencion}</Text>
+            <Text style={[Interactions.base, Interactions.prevencion]}>
+              Prevención: {item.prevencion}
+            </Text>
           )}
         </>
       ) : (

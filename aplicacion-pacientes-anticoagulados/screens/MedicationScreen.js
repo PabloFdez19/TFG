@@ -39,6 +39,15 @@ const MedicationsScreen = ({ navigation }) => {
     <View style={styles.medItem}>
       <Text style={styles.medName}>{item.name}</Text>
       <Text style={styles.medDose}>Dosis: {item.doses}</Text>
+      
+      {/* Nuevo: Mostrar instrucciones */}
+      {item.instructions && (
+        <View style={styles.instructionsContainer}>
+          <Ionicons name="information-circle-outline" size={24} color="#34495e" />
+          <Text style={styles.instructionsText}>{item.instructions}</Text>
+        </View>
+      )}
+      
       <View style={styles.reminderInfo}>
         <Ionicons name="alarm-outline" size={24} color="#34495e" />
         <Text style={styles.reminderText}>{getReminderText(item.reminder)}</Text>
@@ -59,7 +68,7 @@ const MedicationsScreen = ({ navigation }) => {
       />
       <TouchableOpacity 
           style={styles.exitButton}
-          onPress={navigation.goBack}
+          onPress={() => navigation.navigate('Home')}
         > 
         <View>
           <Text style={styles.exitButtonText}> Salir</Text>
@@ -103,6 +112,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  instructionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  instructionsText: {
+    fontSize: 16,
+    color: '#34495e',
+    marginLeft: 10,
+    fontStyle: 'italic',
   },
   medName: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
   medDose: { fontSize: 18, color: '#555', marginBottom: 15 },

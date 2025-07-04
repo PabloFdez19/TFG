@@ -148,6 +148,27 @@ const Interactions = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
+  accionInmediata: {
+    backgroundColor: '#FEE2E2',
+    borderLeftColor: '#DC2626',
+  },
+  seguimiento: {
+    backgroundColor: '#FEF9C3',
+    borderLeftColor: '#CA8A04',
+  },
+  prevencion: {
+    backgroundColor: '#DCFCE7',
+    borderLeftColor: '#16A34A',
+  },
+  base: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 8,
+    padding: 10,
+    borderLeftWidth: 4,
+    borderRadius: 6,
+    color: '#1E293B',
+  },
 });
 
 export default Interactions;

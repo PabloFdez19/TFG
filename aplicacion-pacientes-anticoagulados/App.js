@@ -20,6 +20,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AddReminderScreen from './screens/AddReminderScreen';
 
 const Stack = createStackNavigator();
 SplashScreen.preventAutoHideAsync();
@@ -32,6 +33,7 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -143,6 +145,11 @@ export default function App() {
           name="AddMedication"
           component={AddMedicationScreen}
           options={{ title: 'Añadir Medicamento' }}
+        />
+        <Stack.Screen 
+          name="AddReminder" 
+          component={AddReminderScreen}
+          options={{ title: 'Programar Recordatorio' }}
         />
         <Stack.Screen name="Caregiver" component={CaregiverScreen} />
       </Stack.Navigator>

@@ -61,27 +61,38 @@ const ManageReminders = ({ navigation }) => {
         const time = new Date(reminder.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         if (reminder.isSingleTime) return `Una vez: ${time}`;
         if (reminder.isRecurrent && reminder.selectedDays?.length > 0) {
-            const days = reminder.selectedDays.map(d => ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'][d]).join(', ');
+            const days = reminder.selectedDays.map(d => ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'][d]).join(', ');
             return `Recurrente: ${time} (${days})`;
         }
         return `Diario: ${time}`;
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.reminderItem}>
-            <View style={styles.reminderInfo}>
+        <View style={styles.medItem}>
+            <View style={styles.medInfo}>
                 <Text style={styles.medName}>{item.name}</Text>
-                <View style={styles.reminderDetail}>
-                    <Ionicons name="alarm-outline" size={20} color="#34495e" />
-                    <Text style={styles.reminderText}>{getReminderText(item.reminder)}</Text>
-                </View>
+                <Text style={styles.medDose}>Dosis: {item.doses}</Text>
+                {item.instructions && (
+                    <Text style={styles.instructionsText}>Instrucciones: {item.instructions}</Text>
+                )}
+                
+                {item.reminder ? (
+                    <View style={styles.reminderDetail}>
+                        <Ionicons name="alarm-outline" size={20} color="#34495e" />
+                        <Text style={styles.reminderText}>{getReminderText(item.reminder)}</Text>
+                    </View>
+                ) : (
+                    <Text style={styles.noReminderText}>Sin recordatorio programado</Text>
+                )}
             </View>
 
-            {item.reminder && (
+            {item.reminder ? (
                 <View style={styles.actionsContainer}>
                     <TouchableOpacity
                         style={[styles.actionButton, styles.editButton]}
-                        onPress={() => navigation.navigate('AddMedication', { medication: item })}
+                        onPress={() => navigation.navigate('AddReminder', { 
+                            medication: item,
+                        })}
                     >
                         <Ionicons name="pencil-outline" size={18} color="white" />
                     </TouchableOpacity>
@@ -93,32 +104,37 @@ const ManageReminders = ({ navigation }) => {
                         <Ionicons name="trash-outline" size={18} color="white" />
                     </TouchableOpacity>
                 </View>
+            ) : (
+                <TouchableOpacity
+                    style={styles.addReminderButton}
+                    onPress={() => navigation.navigate('AddReminder', { medication: item })}
+                >
+                    <Ionicons name="add" size={20} color="white" />
+                    <Text style={styles.addReminderText}>Añadir</Text>
+                </TouchableOpacity>
             )}
         </View>
     );
 
-    // Filtrar solo medicamentos con recordatorios
-    const medicationsWithReminders = medications.filter(m => m.reminder);
-
     return (
         <View style={styles.container}>
             <FlatList
-                data={medicationsWithReminders}
+                data={medications}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 ListEmptyComponent={
-                    <Text style={styles.emptyText}>No hay recordatorios programados</Text>
+                    <Text style={styles.emptyText}>No hay medicamentos guardados</Text>
                 }
                 contentContainerStyle={{ paddingBottom: 30 }}
             />
-
-            <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => navigation.navigate('AddMedication')}
-            >
-                <Ionicons name="add" size={30} color="white" />
-                <Text style={styles.addButtonText}>Añadir Recordatorio</Text>
-            </TouchableOpacity>
+        <TouchableOpacity 
+                  style={styles.exitButton}
+                  onPress={() => navigation.navigate('Caregiver')}
+                > 
+                <View>
+                  <Text style={styles.exitButtonText}> Salir</Text>
+                </View>
+        </TouchableOpacity>
         </View>
     );
 };
@@ -129,7 +145,28 @@ const styles = StyleSheet.create({
         backgroundColor: '#f2f2f7',
         paddingTop: 70,
     },
-    reminderItem: {
+    exitButton: {
+        backgroundColor: '#2a86ff',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        alignSelf: 'stretch',
+        margin: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 5,
+        marginBottom: 45,
+  },
+  exitButtonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+  },
+    medItem: {
         backgroundColor: 'white',
         padding: 15,
         marginHorizontal: 15,
@@ -144,7 +181,7 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3,
     },
-    reminderInfo: {
+    medInfo: {
         flex: 1,
     },
     medName: {
@@ -152,14 +189,32 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
     },
+    medDose: {
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 5,
+    },
+    instructionsText: {
+        fontSize: 14,
+        color: '#7f8c8d',
+        marginBottom: 10,
+        fontStyle: 'italic',
+    },
     reminderDetail: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: 5,
     },
     reminderText: {
         fontSize: 16,
         color: '#34495e',
         marginLeft: 10,
+    },
+    noReminderText: {
+        fontSize: 16,
+        color: '#e74c3c',
+        fontStyle: 'italic',
+        marginTop: 5,
     },
     actionsContainer: {
         flexDirection: 'row',
@@ -173,31 +228,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     editButton: {
-        backgroundColor: '#3498db',
+        backgroundColor: '#f39c12',
     },
     deleteButton: {
         backgroundColor: '#e74c3c',
+    },
+    addReminderButton: {
+        backgroundColor: '#27ae60',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    addReminderText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '500',
+        marginLeft: 5,
     },
     emptyText: {
         textAlign: 'center',
         marginTop: 60,
         fontSize: 18,
         color: '#666',
-    },
-    addButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#27ae60',
-        paddingVertical: 15,
-        borderRadius: 10,
-        margin: 15,
-    },
-    addButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginLeft: 10,
     },
 });
 
