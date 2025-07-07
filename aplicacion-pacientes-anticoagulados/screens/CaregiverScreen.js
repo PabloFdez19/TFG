@@ -1,8 +1,12 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+// src/screens/CaregiverScreen.js
+import React, { useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from '../components/AuthContext';
 
 const CaregiverScreen = ({ navigation }) => {
+  const { logout } = useContext(AuthContext);
+
   const menuItems = [
     {
       title: "Añadir Medicación",
@@ -20,6 +24,20 @@ const CaregiverScreen = ({ navigation }) => {
       screen: 'manageReminders'
     }
   ];
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que quieres salir del Modo Cuidador?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Salir", onPress: () => {
+            logout();
+          } 
+        }
+      ]
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -43,8 +61,19 @@ const CaregiverScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.buttonText}>Atras</Text>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ManagePin')}>
+          <Text style={styles.buttonText}>Gestionar PIN</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Cerrar Sesión</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.exitButton}
+        onPress={() => navigation.navigate('Home')}
+     > 
+        <Text style={styles.exitButtonText}>Salir</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -72,33 +101,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
-  menuContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
+  menuContainer: {},
   button: {
-    backgroundColor: '#2a86ff',
-    padding: 20,
-    marginTop: 25,
+    backgroundColor: '#2A7F9F',
+    padding: 15,
+    marginTop: 15,
     borderRadius: 10,
     alignSelf: 'center',
-    width: '60%',
+    width: '80%',
+  },
+  logoutButton: {
+    backgroundColor: '#d9534f',
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#fff',
     textAlign: 'center',
     fontWeight: '600',
-    borderRadius: 10,
   },
   menuCard: {
     width: '100%',
-    height: 120,
     backgroundColor: '#f8f9fa',
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
+    flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -107,14 +134,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   iconContainer: {
-    marginBottom: 15,
+    marginRight: 20,
   },
   menuText: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
-    textAlign: 'center',
   },
+  exitButton: { backgroundColor: '#2a86ff', paddingVertical: 15, borderRadius: 10, alignSelf:'center',marginHorizontal: 20, marginVertical: 10, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, width:'80%', shadowOpacity: 0.3, shadowRadius: 3, elevation: 5 },
+  exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
 });
 
 export default CaregiverScreen;

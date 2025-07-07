@@ -1,158 +1,106 @@
+// App.js
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { TransitionPresets } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+import React, { useEffect, useContext } from 'react';
+import { Platform, View, ActivityIndicator } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
+
+// Componentes y Pantallas
+import initializeDatabase from './components/Database/initDatabase';
+import { AuthProvider, AuthContext } from './components/AuthContext';
 import HomeScreen from './screens/HomeScreen.js';
 import EducationScreen from './screens/EducationScreen.js';
 import EducationDetail from './screens/EducationDetail';
 import InteractionsScreen from './screens/InteractionsScreen.js';
 import QuizScreen from './screens/QuizScreen.js';
 import MedicationsScreen from './screens/MedicationScreen.js';
-import initializeDatabase from './components/Database/initDatabase';
-import AddMedicationScreen from './screens/AddMedicationScreen.js';
 import CaregiverScreen from './screens/CaregiverScreen.js';
-import ManageMedications from './components/ManageMedications.js';
-import ManageReminders from './components/ManageReminders.js';
 import HistoryScreen from './screens/HistoryScreen';
 import QuizHomeScreen from './screens/QuizHomeScreen';
-import 'react-native-gesture-handler';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import CaregiverAuthScreen from './screens/CaregiverAuthScreen';
+import CaregiverPinSetupScreen from './screens/CaregiverPinSetupScreen';
+import CaregiverPinLoginScreen from './screens/CaregiverPinLoginScreen';
+import AddMedicationScreen from './screens/AddMedicationScreen.js';
+import ManageMedications from './components/ManageMedications.js';
+import ManageReminders from './components/ManageReminders.js';
 import AddReminderScreen from './screens/AddReminderScreen';
+import ManagePinScreen from './screens/ManagePinScreen';
 
 const Stack = createStackNavigator();
-SplashScreen.preventAutoHideAsync();
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowList: true,
-  }),
-});
+// Componente de carga inicial
+const InitialLoadingScreen = () => (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <ActivityIndicator size="large" color="#2A7F9F" />
+  </View>
+);
 
+const AppNavigator = () => {
+  const { caregiverIsLoggedIn, isLoading } = useContext(AuthContext);
+
+  if (isLoading) {
+    return <InitialLoadingScreen />;
+  }
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {caregiverIsLoggedIn ? (
+        // Pantallas a las que se accede una vez logueado (con o sin PIN)
+        <Stack.Group>
+          <Stack.Screen name="Caregiver" component={CaregiverScreen} />
+          <Stack.Screen name="ManagePin" component={ManagePinScreen} />
+          <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
+          <Stack.Screen name="manageMedications" component={ManageMedications} />
+          <Stack.Screen name="manageReminders" component={ManageReminders} />
+          <Stack.Screen name="AddReminder" component={AddReminderScreen} />
+        </Stack.Group>
+      ) : (
+        // Pantallas públicas y flujo de autenticación
+        <Stack.Group>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="CaregiverAuth" component={CaregiverAuthScreen} />
+          <Stack.Screen name="CaregiverPinSetup" component={CaregiverPinSetupScreen} />
+          <Stack.Screen name="CaregiverPinLogin" component={CaregiverPinLoginScreen} />
+          <Stack.Screen name="Education" component={EducationScreen} />
+          <Stack.Screen name="Detalle" component={EducationDetail} options={{ title: '', headerBackTitleVisible: false, ...TransitionPresets.ModalSlideFromBottomIOS }} />
+          <Stack.Screen name="Interactions" component={InteractionsScreen} />
+          <Stack.Screen name="QuizHome" component={QuizHomeScreen} />
+          <Stack.Screen name="Quiz" component={QuizScreen} />
+          <Stack.Screen name="History" component={HistoryScreen} />
+          <Stack.Screen name="Medications" component={MedicationsScreen} />
+        </Stack.Group>
+      )}
+    </Stack.Navigator>
+  );
+};
 
 export default function App() {
-  const [appIsReady, setAppIsReady] = useState(false);
-  const notificationListener = useRef();
   useEffect(() => {
     const prepareApp = async () => {
       try {
-        await initializeDatabase(); // Aquí se inicializa UNA VEZ
+        await SplashScreen.preventAutoHideAsync();
+        await initializeDatabase();
+        if (Platform.OS === 'android') {
+          await Notifications.setNotificationChannelAsync('default', {
+            name: 'default', importance: Notifications.AndroidImportance.MAX,
+          });
+        }
       } catch (e) {
-        console.error("Error inicializando DB en App.js:", e);
+        console.error("Error inicializando:", e);
       } finally {
-        setAppIsReady(true);
         await SplashScreen.hideAsync();
       }
     };
     prepareApp();
   }, []);
 
-  useEffect(() => {
-    const setupNotifications = async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Se necesitan permisos para las notificaciones!');
-      }
-
-      // Configurar canal para Android
-      if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: 'default',
-          importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
-          lightColor: '#FF231F7C',
-        });
-      }
-      // Configurar notificaciones para iOS
-      if (Platform.OS === 'ios') {
-        await Notifications.setNotificationCategoryAsync('default', {
-          actions: [
-            {
-              identifier: 'SNOOZE',
-              buttonTitle: 'Snooze',
-              options: { opensAppToForeground: true },
-            },
-          ],
-        });
-      }
-    };
-
-    setupNotifications();
-
-    // Escuchar notificaciones recibidas
-    notificationListener.current = Notifications.addNotificationReceivedListener(async notification => {
-      const { data } = notification.request.content;
-
-      if (data?.isSingleTime && data?.medicationId) {
-        try {
-          const stored = await AsyncStorage.getItem('medications') || '[]';
-          let medications = JSON.parse(stored);
-          medications = medications.map(med =>
-            med.id === data.medicationId
-              ? { ...med, notificationId: null, reminder: null }
-              : med
-          );
-          await AsyncStorage.setItem('medications', JSON.stringify(medications));
-          console.log('Recordatorio de una sola vez eliminado');
-        } catch (err) {
-          console.error('Error eliminando recordatorio una vez mostrado:', err);
-        }
-      }
-    });
-
-    return () => {
-      // CORRECCIÓN: Usar el método remove() directamente de la suscripción
-      if (notificationListener.current) {
-        notificationListener.current.remove();
-      }
-    };
-  }, []);
-
-  if (!appIsReady) {
-    return null; // o un spinner si prefieres
-  }
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Education" component={EducationScreen} />
-        <Stack.Screen
-          name="Detalle"
-          component={EducationDetail}
-          options={{
-            title: '',
-            headerBackTitleVisible: false,
-            ...TransitionPresets.ModalSlideFromBottomIOS,
-          }}
-        />
-        <Stack.Screen name="Interactions" component={InteractionsScreen} />
-        <Stack.Screen name="QuizHome" component={QuizHomeScreen} options={{ title: 'Quiz' }} />
-        <Stack.Screen name="Quiz" component={QuizScreen} options={{ title: 'Cuestionario' }} />
-        <Stack.Screen name="History" component={HistoryScreen} options={{ title: 'Historial' }} />
-        <Stack.Screen name="manageMedications" component={ManageMedications} />
-        <Stack.Screen name="manageReminders" component={ManageReminders} />
-        <Stack.Screen
-          name="Medications"
-          component={MedicationsScreen}
-          options={{ title: 'Mis Medicamentos' }}
-        />
-        <Stack.Screen
-          name="AddMedication"
-          component={AddMedicationScreen}
-          options={{ title: 'Añadir Medicamento' }}
-        />
-        <Stack.Screen 
-          name="AddReminder" 
-          component={AddReminderScreen}
-          options={{ title: 'Programar Recordatorio' }}
-        />
-        <Stack.Screen name="Caregiver" component={CaregiverScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

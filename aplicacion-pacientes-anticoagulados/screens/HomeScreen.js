@@ -1,7 +1,8 @@
+// HomeScreen.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Platform, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
-import styles from '../Styles/HomeStyle.js';
+import styles from '../Styles/HomeStyle.js'; // Asumo que tienes tus estilos aquí
 import { useEmergency } from '../components/emergencyCall.js';
 
 const HomeScreen = ({ navigation }) => {
@@ -29,7 +30,8 @@ const HomeScreen = ({ navigation }) => {
     {
       title: "Modo Cuidador",
       icon: <Feather name="user" size={28} color="#2A7F9F" />,
-      screen: 'Caregiver'
+      // CAMBIO CLAVE: Apunta al flujo de autenticación
+      screen: 'CaregiverAuth'
     }
   ];
 
@@ -42,7 +44,7 @@ const HomeScreen = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Image 
-          source={require('../assets/medical-icon.png')} // Asegúrate de tener esta imagen
+          source={require('../assets/medical-icon.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>Bienvenido a Anticoagulados</Text>
@@ -77,5 +79,6 @@ const HomeScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
+
 
 export default HomeScreen;
