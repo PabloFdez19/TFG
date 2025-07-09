@@ -38,87 +38,86 @@ const AddReminderScreen = ({ route, navigation }) => {
     }, [medication]);
 
     const handleSaveReminder = async () => {
-        if (frequency === 'recurrent' && selectedDays.length === 0) {
+  // Envolvemos TODO en un try...catch para que ningún error se escape
+        try {
+            console.log("--- INICIA handleSaveReminder ---");
+            
+            // PASO 0: Comprobamos si tenemos el objeto 'medication'
+            if (!medication || !medication.id) {
+                console.error("ERROR FATAL: El objeto 'medication' no está llegando a la pantalla AddReminderScreen.");
+                Alert.alert("Error", "No se han recibido los datos de la medicación.");
+                return;
+            }
+            console.log("PASO 0: Datos de medicación recibidos:", JSON.stringify(medication, null, 2));
+
+            // PASO 1: Validaciones
+            if (frequency === 'recurrent' && selectedDays.length === 0) {
             Alert.alert('Faltan días', 'Selecciona al menos un día.');
             return;
-        }
+            }
+            console.log("PASO 1: Validaciones superadas.");
 
-        if (medication.notificationIds) {
+            // PASO 2: Cancelar notificaciones antiguas si existen
+            if (medication.notificationIds && Array.isArray(medication.notificationIds) && medication.notificationIds.length > 0) {
+            console.log("PASO 2: Cancelando notificaciones antiguas:", medication.notificationIds);
             await Promise.all(medication.notificationIds.map(id => Notifications.cancelScheduledNotificationAsync(id)));
-        }
-        
-        const baseContent = {
+            } else {
+            console.log("PASO 2: No hay notificaciones antiguas que cancelar.");
+            }
+            console.log("PASO 3: Fase de cancelación finalizada.");
+            const isRecurring = frequency !== 'single';
+            console.log(`>>> Creando recordatorio. ¿Es recurrente? ${isRecurring}`);
+            // PASO 4: Preparar el contenido de la notificación
+            const baseContent = {
             title: 'Recordatorio de Medicación',
             body: `Es hora de tomar ${medication.name} (Dosis: ${medication.doses})`,
             sound: 'default',
-        };
-
-        let notificationIds = [];
-        let reminderData = { time: time.toISOString(), frequency };
-        
-        try {
-            if (frequency === 'single') {
-                if (time <= new Date()) {
-                    Alert.alert('Hora inválida', 'La hora debe ser en el futuro.');
-                    return;
-                }
-                const content = { ...baseContent, data: { medicationId: medication.id, frequency: 'single' } };
-                // --- CORRECCIÓN DE WARNING: Usar el formato de trigger moderno ---
-                const trigger = { type: 'date', date: time };
-                const id = await Notifications.scheduleNotificationAsync({ content, trigger });
-                if (id) notificationIds.push(id);
-            }
+            };
+            const content = {
+            ...baseContent,
+            data: {
+                medicationId: medication.id,
+                frequency: frequency,
+                isRecurring: isRecurring,
+            },
+            };
             
-            else if (frequency === 'daily') {
-                let firstTriggerDate = new Date(time);
-                if (firstTriggerDate <= new Date()) firstTriggerDate.setDate(firstTriggerDate.getDate() + 1);
-                const content = { ...baseContent, data: { medicationId: medication.id, frequency: 'daily', originalTime: time.toISOString() } };
-                const trigger = { type: 'date', date: firstTriggerDate };
-                const id = await Notifications.scheduleNotificationAsync({ content, trigger });
-                if (id) notificationIds.push(id);
-            }
+            console.log(">>> Payload que se va a programar:", JSON.stringify(content.data, null, 2));
+    
+    // 3. Programamos la notificación
+            const trigger = { type: 'date', date: time };
+            const notificationId = await Notifications.scheduleNotificationAsync({ content, trigger });
 
-            else if (frequency === 'cyclical') {
-                const interval = parseInt(intervalHours, 10);
-                reminderData.intervalHours = interval;
-                const content = { ...baseContent, data: { medicationId: medication.id, frequency: 'cyclical', intervalHours: interval, originalTime: time.toISOString() } };
-                // Para los cíclicos, el primer trigger es una fecha, luego se reprograma con intervalo
-                const firstTriggerDate = new Date(Date.now() + 2 * 1000); // Empezar en 2 segundos
-                const trigger = { type: 'date', date: firstTriggerDate };
-                const id = await Notifications.scheduleNotificationAsync({ content, trigger });
-                if (id) notificationIds.push(id);
+            if (!notificationId) {
+            Alert.alert("Error", "No se pudo programar el recordatorio.");
+            return;
             }
-                
-            else if (frequency === 'recurrent') {
-                reminderData.selectedDays = selectedDays;
-                for (const dayIndex of selectedDays) {
-                    const firstTriggerDate = getNextDateForDay(time, dayIndex);
-                    const content = { ...baseContent, data: { medicationId: medication.id, frequency: 'recurrent', originalTime: time.toISOString(), scheduleDay: dayIndex } };
-                    const trigger = { type: 'date', date: firstTriggerDate };
-                    const id = await Notifications.scheduleNotificationAsync({ content, trigger });
-                    if (id) notificationIds.push(id);
-                }
-            }
+            console.log(`>>> Notificación programada con éxito. ID: ${notificationId}`);
 
-            if (notificationIds.length === 0) {
-                Alert.alert('Error', 'No se pudo programar el recordatorio.');
-                return;
-            }
-
-            const updatedMed = { ...medication, reminder: reminderData, notificationIds };
+            // PASO 8: Guardar todo en AsyncStorage
+            const updatedMed = {
+                ...medication,
+                reminder: { time: time.toISOString(), frequency, selectedDays, intervalHours },
+                notificationIds: [notificationId]
+            };
             const existingMeds = await AsyncStorage.getItem('medications') || '[]';
             let medications = JSON.parse(existingMeds);
             medications = medications.map(med => med.id === medication.id ? updatedMed : med);
             await AsyncStorage.setItem('medications', JSON.stringify(medications));
+            console.log("PASO 8: Medicación actualizada en AsyncStorage.");
 
             Alert.alert('Recordatorio Guardado', 'El recordatorio se ha guardado correctamente.', [
-                { text: 'OK', onPress: () => navigation.goBack() }
+            { text: 'OK', onPress: () => navigation.goBack() }
             ]);
 
         } catch (e) {
-            console.error("Error al programar o guardar:", e);
+            // ¡Aquí atraparemos al culpable!
+            console.error("!!!!!!!!!! ERROR ATRAPADO EN handleSaveReminder !!!!!!!!!!");
+            console.error("Mensaje de error:", e.message);
+            console.error("Stack de error:", e.stack); // El stack te dirá la línea exacta del error
+            Alert.alert('Error Inesperado', `Ocurrió un error al guardar: ${e.message}`);
         }
-    };
+};
     
     const FrequencyButton = ({ label, value }) => (
         <TouchableOpacity 

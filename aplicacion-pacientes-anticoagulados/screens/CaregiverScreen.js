@@ -28,15 +28,16 @@ const CaregiverScreen = ({ navigation }) => {
   const handleLogout = () => {
     Alert.alert(
       "Cerrar Sesión",
-      "¿Estás seguro de que quieres salir del Modo Cuidador?",
+      "¿Estás seguro de que quieres salir del Modo Cuidador? Tu sesión temporal se cerrará.",
       [
         { text: "Cancelar", style: "cancel" },
-        { text: "Salir", onPress: () => {
-            logout();
-          } 
-        }
+        { text: "Salir", onPress: logout } // Llama a logout directamente
       ]
     );
+  };
+
+  const handleExitToHome = () => {
+      logout();
   };
 
   return (
@@ -71,7 +72,7 @@ const CaregiverScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.exitButton}
-        onPress={() => navigation.navigate('Home')}
+        onPress={handleExitToHome} // 3. Usamos la nueva función
      > 
         <Text style={styles.exitButtonText}>Salir</Text>
       </TouchableOpacity>

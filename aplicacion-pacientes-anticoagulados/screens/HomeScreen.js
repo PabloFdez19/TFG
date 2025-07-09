@@ -4,8 +4,25 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'rea
 import { MaterialIcons, FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
 import styles from '../Styles/HomeStyle.js'; // Asumo que tienes tus estilos aquí
 import { useEmergency } from '../components/emergencyCall.js';
+import { AuthContext } from '../components/AuthContext';
+import { useContext } from 'react';
 
 const HomeScreen = ({ navigation }) => {
+
+  const { pinIsSet, caregiverIsLoggedIn } = useContext(AuthContext);
+
+  const handleCaregiverPress = async () => {
+    // 2. Antes de navegar, comprobamos el estado
+    if (!caregiverIsLoggedIn) {
+      if (pinIsSet) {
+        // Si hay un PIN, vamos a la pantalla de login
+        navigation.navigate('CaregiverPinLogin');
+      } else {
+        // Si no hay PIN, vamos a la pantalla de configuración
+        navigation.navigate('CaregiverPinSetup');
+      }
+    }
+  };
   const menuItems = [
     {
       title: "Información Educativa",
@@ -31,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
       title: "Modo Cuidador",
       icon: <Feather name="user" size={28} color="#2A7F9F" />,
       // CAMBIO CLAVE: Apunta al flujo de autenticación
-      screen: 'CaregiverAuth'
+      onPress: handleCaregiverPress,
     }
   ];
 
@@ -57,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             key={index}
             style={styles.menuCardWrapper}
-            onPress={() => navigation.navigate(item.screen)}
+            onPress={item.onPress ? item.onPress : () => navigation.navigate(item.screen)}
             activeOpacity={0.8}
           >
             <View style={styles.menuCardLarge}>

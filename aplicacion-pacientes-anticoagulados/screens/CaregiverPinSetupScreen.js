@@ -6,7 +6,7 @@ import { AuthContext } from '../components/AuthContext';
 const CaregiverPinSetupScreen = ({ navigation }) => {
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const { setupPin, skipPinSetup } = useContext(AuthContext);
+  const { setupPin, loginWithoutPin } = useContext(AuthContext); // Cambiado skipPinSetup
 
   const handleSetPin = async () => {
     if (pin.length !== 4 || !/^\d+$/.test(pin)) {
@@ -23,7 +23,7 @@ const CaregiverPinSetupScreen = ({ navigation }) => {
   };
 
   const handleSkip = async () => {
-    await skipPinSetup();
+    await loginWithoutPin();
     // La navegación es automática
   };
   

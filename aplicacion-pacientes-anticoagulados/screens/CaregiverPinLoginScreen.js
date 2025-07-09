@@ -5,12 +5,12 @@ import { AuthContext } from '../components/AuthContext';
 
 const CaregiverPinLoginScreen = ({ navigation }) => {
   const [pin, setPin] = useState('');
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext); // Cambiado a loginWithPin
 
   const handleLogin = async () => {
-    const success = await login(pin);
+    const success = await login(pin); // Usamos la nueva función
     if (success) {
-      navigation.replace('Caregiver');
+      // La navegación es automática por el cambio de estado en AuthContext
     } else {
       Alert.alert('Error', 'PIN incorrecto. Inténtalo de nuevo.');
       setPin('');

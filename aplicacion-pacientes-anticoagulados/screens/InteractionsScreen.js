@@ -3,6 +3,7 @@ import { View, TextInput, FlatList, Text, Modal, TouchableOpacity } from 'react-
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Interactions from '../Styles/InteractionStyles.js';
 import * as SQLite from 'expo-sqlite';
+import { useDatabase } from '../components/DatabaseContext.js';
 
 const FiltroPopup = ({ 
   label, 
@@ -86,6 +87,8 @@ const InteractionsScreen = () => {
   const [situaciones, setSituaciones] = useState([]);
   const [situacionesFiltradas, setSituacionesFiltradas] = useState([]);
 
+  const { db, isLoading: isDbLoading } = useDatabase();
+
   const tipos = [
     { label: 'Todos', value: 'todos' },
     { label: 'Alimentos', value: 'alimento' },
@@ -103,33 +106,21 @@ const InteractionsScreen = () => {
   ];
 
   useEffect(() => {
-    const initDB = async () => {
-      try {
-        const database = await SQLite.openDatabaseAsync('anticoagulados.db');
-        await cargarInteracciones(database);
-      } catch (err) {
-        console.error('Error al inicializar DB:', err);
+    const cargarDatos = async () => {
+      if (!isDbLoading && db) {
+        try {
+          const interaccionesData = await db.getAllAsync('SELECT * FROM interacciones');
+          const situacionesData = await db.getAllAsync('SELECT * FROM situaciones');
+          
+          setInteracciones(interaccionesData);
+          setSituaciones(situacionesData);
+        } catch (error) {
+          console.log('Error al cargar interacciones desde el contexto: ', error);
+        }
       }
     };
-
-    initDB();
-  }, []);
-
-  const cargarInteracciones = async (database) => {
-    if (!database) return;
-
-    try {
-      const interacciones = await database.getAllAsync('SELECT * FROM interacciones');
-      const situaciones = await database.getAllAsync('SELECT * FROM situaciones');
-      const results = [...interacciones, ...situaciones];
-      setInteracciones(results.filter(item => item.tipo !== 'situacion'));
-      setInteraccionesFiltradas(results.filter(item => item.tipo !== 'situacion'));
-      setSituaciones(results.filter(item => item.tipo === 'situacion'));
-      setSituacionesFiltradas(results.filter(item => item.tipo === 'situacion'));
-    } catch (error) {
-      console.log('Error al cargar interacciones: ', error);
-    }
-  };
+    cargarDatos();
+  }, [db, isDbLoading]);
 
   useEffect(() => {
     if ((!interacciones || interacciones.length === 0)&&(!situaciones || situaciones.length === 0)) return;
@@ -167,6 +158,15 @@ const InteractionsScreen = () => {
       default: return 'gray';
     }
   };
+
+  if (isDbLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#2a86ff" />
+        <Text>Cargando base de datos...</Text>
+      </View>
+    );
+  }
 
   const renderItem = ({ item }) => (
     <View style={Interactions.itemContainer}>

@@ -1,53 +1,40 @@
 // src/screens/CaregiverAuthScreen.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react'; // Cambiamos useFocusEffect por useEffect
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../components/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CaregiverAuthScreen = ({ navigation }) => {
-  // COMENTARIO: Obtenemos login y skipPinSetup para manejar la sesión.
-  const { skipPinSetup, login } = useContext(AuthContext);
+  // Obtenemos la función para comprobar el estado desde el contexto
+  const { checkAuthState } = useContext(AuthContext);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const decideRoute = async () => {
-        const optedOut = await AsyncStorage.getItem('caregiverPinOptOut');
-        const pin = await AsyncStorage.getItem('caregiverPin');
-        // COMENTARIO: Obtenemos el timestamp del último login.
-        const sessionTimestamp = await AsyncStorage.getItem('caregiverSessionTimestamp');
+  // Usamos useEffect para que se ejecute solo una vez al montar la pantalla
+  useEffect(() => {
+    const determineRoute = async () => {
+      // 1. Llamamos a la función que ahora nos devuelve el estado
+      const { isLoggedIn, isPinSet } = await checkAuthState();
 
-        if (pin) {
-          // COMENTARIO: Si hay un PIN configurado, revisamos la sesión.
-          if (sessionTimestamp) {
-            const now = new Date().getTime();
-            const lastLogin = parseInt(sessionTimestamp, 10);
-            const thirtyMinutes = 30 * 60 * 1000;
-
-            if (now - lastLogin < thirtyMinutes) {
-              // 1. Sesión activa: Entrar directamente.
-              // Usamos skipPinSetup porque ya hace el login directo.
-              skipPinSetup(); 
-              return; 
-            }
-          }
-          // 2. Si no hay sesión o ha caducado, pedimos que se introduzca el PIN.
+      // 2. Tomamos la decisión correcta
+      if (isLoggedIn) {
+        // Si la sesión ya está iniciada (por tiempo o por no tener PIN),
+        // no hacemos nada. El navegador principal en App.js se encargará
+        // de mostrar las pantallas del cuidador automáticamente.
+        return;
+      } else {
+        // Si no hay sesión, decidimos a dónde ir
+        if (isPinSet) {
+          // Si hay un PIN, vamos a la pantalla de login
           navigation.replace('CaregiverPinLogin');
-
-        } else if (optedOut === 'true') {
-          // 3. Si se eligió "sin PIN", se inicia sesión directamente.
-          skipPinSetup();
-
         } else {
-          // 4. Si no hay ninguna configuración (primera vez o se quiere cambiar), vamos a la pantalla de decisión.
+          // Si no hay PIN, vamos a la pantalla para crearlo
           navigation.replace('CaregiverPinSetup');
         }
-      };
+      }
+    };
 
-      decideRoute();
-    }, [navigation, skipPinSetup, login])
-  );
+    determineRoute();
+  }, [checkAuthState, navigation]);
 
+  // Mientras se ejecuta la comprobación, mostramos una pantalla de carga
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#2A7F9F" />
