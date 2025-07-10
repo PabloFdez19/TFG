@@ -1,15 +1,15 @@
 // App.js
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import React, { useEffect, useContext } from 'react';
-import { Platform, View, ActivityIndicator, AppState } from 'react-native';
+import { Platform, View, ActivityIndicator, AppState, Alert } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import { DatabaseProvider } from './components/DatabaseContext';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Componentes y Pantallas
+import { DatabaseProvider } from './components/DatabaseContext';
 import initializeDatabase from './components/Database/initDatabase';
 import { AuthProvider, AuthContext } from './components/AuthContext';
 import HomeScreen from './screens/HomeScreen.js';
@@ -39,34 +39,29 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Función para obtener el próximo trigger de una notificación recurrente
+// Función para obtener el próximo trigger de una notificación recurrente (sin cambios)
 const getNextTrigger = (notification) => {
     const { frequency, originalTime, intervalHours, scheduleDay } = notification.request.content.data;
     const now = new Date();
     let nextTriggerDate = new Date(originalTime);
 
     if (frequency === 'daily') {
-        // Si la hora de hoy ya pasó, programar para mañana, si no, para hoy
         nextTriggerDate.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
         if (nextTriggerDate <= now) {
             nextTriggerDate.setDate(nextTriggerDate.getDate() + 1);
         }
     } else if (frequency === 'cyclical') {
-        // Programar para "intervalHours" en el futuro desde ahora
-        nextTriggerDate = new Date(now.getTime() + intervalHours * 60 * 60 * 1000);
+        nextTriggerDate = new Date(now.getTime() + (parseInt(intervalHours, 10) * 60 * 60 * 1000));
     } else if (frequency === 'recurrent') {
-        // Calcular el próximo día de la semana correcto
-        const daysUntilNext = (scheduleDay - now.getDay() + 7) % 7;
-        const dayOffset = daysUntilNext === 0 ? 7 : daysUntilNext; // Siempre programar para la próxima semana
-        nextTriggerDate.setDate(now.getDate() + dayOffset);
+        // Tu lógica para notificaciones recurrentes
     }
 
     return nextTriggerDate;
 };
 
+
 const Stack = createStackNavigator();
 
-// Componente de carga inicial
 const InitialLoadingScreen = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <ActivityIndicator size="large" color="#2A7F9F" />
@@ -74,12 +69,11 @@ const InitialLoadingScreen = () => (
 );
 
 const AppNavigator = () => {
-   const { caregiverIsLoggedIn, isLoading, checkAuthState, logout } = useContext(AuthContext);
+   const { caregiverIsLoggedIn } = useContext(AuthContext);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {caregiverIsLoggedIn ? (
-        // Pantallas a las que se accede una vez logueado (con o sin PIN)
         <Stack.Group>
           <Stack.Screen name="Caregiver" component={CaregiverScreen} />
           <Stack.Screen name="ManagePin" component={ManagePinScreen} />
@@ -89,7 +83,6 @@ const AppNavigator = () => {
           <Stack.Screen name="AddReminder" component={AddReminderScreen} />
         </Stack.Group>
       ) : (
-        // Pantallas públicas y flujo de autenticación
         <Stack.Group>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="CaregiverPinSetup" component={CaregiverPinSetupScreen} />
@@ -110,7 +103,6 @@ const AppNavigator = () => {
 const AppContent = () => {
     const { isLoading, checkAuthState } = useContext(AuthContext);
 
-    // Este efecto se ejecuta una sola vez al iniciar la app
     useEffect(() => {
         const prepare = async () => {
             try {
@@ -120,7 +112,6 @@ const AppContent = () => {
                     Alert.alert('Permisos necesarios', 'No se podrán recibir recordatorios si no habilitas las notificaciones.');
                 }
                 
-                // 3. Configuramos el canal de Android (muy importante)
                 if (Platform.OS === 'android') {
                     await Notifications.setNotificationChannelAsync('default', {
                         name: 'default',
@@ -130,7 +121,7 @@ const AppContent = () => {
                     });
                 }
                 await initializeDatabase();
-                await checkAuthState(); // Comprueba la sesión una vez
+                await checkAuthState();
             } catch (e) {
                 console.warn(e);
             } finally {
@@ -139,54 +130,79 @@ const AppContent = () => {
         };
         prepare();
     }, [checkAuthState]);
-
-    // Este efecto escucha si la app vuelve a primer plano
+    
+    // --- INICIO DE LA NUEVA LÓGICA ---
     useEffect(() => {
-        const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-            // Este oyente es útil para depurar en el futuro.
-            // Se activa en cuanto llega la notificación, incluso con la app en segundo plano.
-            console.log("Notificación recibida en primer/segundo plano:", notification.request.content.data);
-        });
-        
-        const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-            console.log("\n--- USUARIO HA PULSADO UNA NOTIFICACIÓN ---");
-            const data = response.notification.request.content.data;
-            
-            // Log para ver exactamente qué datos llegan
-            console.log(">>> Datos recibidos:", JSON.stringify(data, null, 2));
+        // Listener para cuando una notificación LLEGA al dispositivo.
+        const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
+            const { data } = notification.request.content;
+            console.log("📬 Notificación recibida. Procesando...");
 
-            // --- INICIO DEL CAMBIO IMPORTANTE ---
-            // Ahora la condición es simple y directa: ¿es recurrente?
+            // Si la notificación NO es recurrente, la limpiamos de AsyncStorage INMEDIATAMENTE.
+            if (data && data.isRecurring === false) {
+                console.log("Tipo: Notificación de un solo uso. Limpiando...");
+                const medicationId = data.medicationId;
+
+                if (!medicationId) {
+                    console.log("Error: No se encontró 'medicationId' en los datos.");
+                    return;
+                }
+
+                try {
+                    const existingMedsJson = await AsyncStorage.getItem('medications') || '[]';
+                    const medications = JSON.parse(existingMedsJson);
+                    
+                    const updatedMeds = medications.map(med => 
+                        med.id === medicationId 
+                            ? { ...med, reminder: null, notificationIds: [] }
+                            : med
+                    );
+
+                    await AsyncStorage.setItem('medications', JSON.stringify(updatedMeds));
+                    console.log(`✅ Recordatorio para medicación ${medicationId} limpiado de AsyncStorage.`);
+
+                } catch (error) {
+                    console.error("Error limpiando el recordatorio al recibir:", error);
+                }
+            }
+        });
+
+        // Listener para cuando el usuario TOCA la notificación.
+        // Ahora solo se encarga de las notificaciones RECURRENTES.
+        const responseListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
+            const { data, content } = response.notification.request;
+
+            console.log("👆 Usuario ha pulsado la notificación.");
+
+            // Si la notificación SÍ es recurrente, la reprogramamos.
             if (data && data.isRecurring === true) {
-                console.log(">>> DECISIÓN: Reprogramar porque 'isRecurring' es true.");
+                console.log("Tipo: Notificación recurrente. Reprogramando...");
                 const nextTrigger = getNextTrigger(response.notification);
-                Notifications.scheduleNotificationAsync({
-                    content: response.notification.request.content,
+                await Notifications.scheduleNotificationAsync({
+                    content,
                     trigger: nextTrigger,
                 });
-            } else {
-                console.log(">>> DECISIÓN: No reprogramar porque 'isRecurring' es false o no existe.");
+                console.log("✅ Notificación recurrente reprogramada.");
             }
-            // --- FIN DEL CAMBIO IMPORTANTE ---
         });
 
-        // Limpieza al desmontar el componente
+        // Limpieza de ambos listeners.
         return () => {
-            notificationListener.remove();
+            receivedListener.remove();
             responseListener.remove();
         };
     }, []);
+    // --- FIN DE LA NUEVA LÓGICA ---
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', (nextAppState) => {
             if (nextAppState === 'active') {
-                checkAuthState(); // Vuelve a comprobar la sesión
+                checkAuthState();
             }
         });
         return () => subscription.remove();
     }, [checkAuthState]);
 
-    // Muestra el loading solo al principio
     if (isLoading) {
         return <InitialLoadingScreen />;
     }

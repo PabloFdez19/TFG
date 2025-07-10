@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, FlatList, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, TextInput, FlatList, Text, Modal, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Interactions from '../Styles/InteractionStyles.js';
-import * as SQLite from 'expo-sqlite';
 import { useDatabase } from '../components/DatabaseContext.js';
 
+// ... (El componente FiltroPopup no necesita cambios)
 const FiltroPopup = ({ 
   label, 
   selectedValue, 
@@ -77,17 +77,17 @@ const FiltroPopup = ({
     </View>
   );
 };
-
 const InteractionsScreen = () => {
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [filtroRiesgo, setFiltroRiesgo] = useState('todos');
   const [interacciones, setInteracciones] = useState([]);
-  const [interaccionesFiltradas, setInteraccionesFiltradas] = useState([]);
   const [situaciones, setSituaciones] = useState([]);
+  const [interaccionesFiltradas, setInteraccionesFiltradas] = useState([]);
   const [situacionesFiltradas, setSituacionesFiltradas] = useState([]);
 
-  const { db, isLoading: isDbLoading } = useDatabase();
+  // CORRECCIÓN: Obtenemos también el estado de `error`.
+  const { db, isLoading: isDbLoading, error: dbError } = useDatabase();
 
   const tipos = [
     { label: 'Todos', value: 'todos' },
@@ -95,7 +95,6 @@ const InteractionsScreen = () => {
     { label: 'Medicamentos', value: 'medicamento' },
     { label: 'Situaciones', value: 'situacion' }
   ];
-
   const riesgos = [
     { label: 'Todos', value: 'todos' },
     { label: 'Alto', value: 'alto' },
@@ -107,21 +106,24 @@ const InteractionsScreen = () => {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      if (!isDbLoading && db) {
+      // Solo intentamos cargar si no estamos cargando, no hay error y la BD existe.
+      if (!isDbLoading && db && !dbError) {
         try {
-          const interaccionesData = await db.getAllAsync('SELECT * FROM interacciones');
-          const situacionesData = await db.getAllAsync('SELECT * FROM situaciones');
-          
+          const [interaccionesData, situacionesData] = await Promise.all([
+             db.getAllAsync('SELECT * FROM interacciones'),
+             db.getAllAsync('SELECT * FROM situaciones')
+          ]);
           setInteracciones(interaccionesData);
           setSituaciones(situacionesData);
         } catch (error) {
-          console.log('Error al cargar interacciones desde el contexto: ', error);
+          console.error('Error al ejecutar consulta en la BD:', error);
         }
       }
     };
     cargarDatos();
-  }, [db, isDbLoading]);
-
+  }, [db, isDbLoading, dbError]);
+  
+  // (La lógica de filtrado no necesita cambios)
   useEffect(() => {
     if ((!interacciones || interacciones.length === 0)&&(!situaciones || situaciones.length === 0)) return;
 
@@ -158,16 +160,27 @@ const InteractionsScreen = () => {
       default: return 'gray';
     }
   };
-
+  // ---
+  // CORRECCIÓN: Renderizado condicional robusto
+  // ---
   if (isDbLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color="#2a86ff" />
-        <Text>Cargando base de datos...</Text>
+        <Text style={styles.messageText}>Cargando base de datos...</Text>
       </View>
     );
   }
 
+  if (dbError) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Error al cargar la base de datos</Text>
+        <Text style={styles.messageText}>Por favor, reinicia la aplicación.</Text>
+      </View>
+    );
+  }
+  
   const renderItem = ({ item }) => (
     <View style={Interactions.itemContainer}>
       {item.tipo === 'situacion' ? (
@@ -217,12 +230,10 @@ const InteractionsScreen = () => {
     <View style={Interactions.container}>
       <TextInput
         style={Interactions.buscador}
-        placeholder="Buscar"
+        placeholder="Buscar..."
         value={busqueda}
         onChangeText={setBusqueda}
       />
-
-      {/* Contenedor de filtros más compacto */}
       <View style={[Interactions.pickersRow, { marginTop: -8 }]}>
         <FiltroPopup
           label="Tipo"
@@ -230,7 +241,6 @@ const InteractionsScreen = () => {
           onValueChange={setFiltroTipo}
           items={tipos}
         />
-
         <FiltroPopup
           label="Riesgo"
           selectedValue={filtroRiesgo}
@@ -240,7 +250,7 @@ const InteractionsScreen = () => {
       </View>
 
       <FlatList
-        data={[...interaccionesFiltradas, ...situacionesFiltradas]}
+        data={[...situacionesFiltradas, ...interaccionesFiltradas]}
         renderItem={renderItem}
         keyExtractor={item => `${item.id}-${item.tipo}`}
         ListEmptyComponent={
@@ -250,5 +260,27 @@ const InteractionsScreen = () => {
     </View>
   );
 };
+
+// Estilos para los mensajes de carga y error
+const styles = StyleSheet.create({
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    messageText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+    },
+    errorText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'red',
+        textAlign: 'center',
+    }
+});
 
 export default InteractionsScreen;

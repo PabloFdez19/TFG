@@ -1,49 +1,39 @@
-// components/DatabaseContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import * as SQLite from 'expo-sqlite';
-import initializeDatabase from './Database/initDatabase'; // Importamos la función que ya tienes
+import initializeDatabase from './Database/initDatabase'; // Importamos la nueva función
 
-// 1. Creamos el contexto
 export const DatabaseContext = createContext(null);
 
-// 2. Creamos un "Proveedor" que manejará la conexión
 export const DatabaseProvider = ({ children }) => {
   const [db, setDb] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let database;
-    const setupDatabase = async () => {
+    const loadDatabase = async () => {
       try {
-        // Llamamos a tu función de inicialización una sola vez
-        database = await initializeDatabase();
+        // CORRECCIÓN: Llamamos a la función que nos devuelve la promesa única.
+        const database = await initializeDatabase();
         setDb(database);
-      } catch (error) {
-        console.error("Error fatal al inicializar la base de datos en el contexto:", error);
+      } catch (e) {
+        setError(e);
       } finally {
         setIsLoading(false);
       }
     };
 
-    setupDatabase();
+    loadDatabase();
 
-    // Opcional: Cierra la base de datos cuando la app se desmonta
-    return () => {
-      if (database) {
-        database.closeAsync();
-      }
-    };
+    // CORRECCIÓN: La limpieza de la conexión ya no es necesaria aquí,
+    // ya que la conexión debe persistir durante toda la vida de la app.
   }, []);
 
-  // Pasamos la conexión a la base de datos y el estado de carga a los hijos
   return (
-    <DatabaseContext.Provider value={{ db, isLoading }}>
+    <DatabaseContext.Provider value={{ db, isLoading, error }}>
       {children}
     </DatabaseContext.Provider>
   );
 };
 
-// 3. Creamos un hook personalizado para usar la base de datos fácilmente
 export const useDatabase = () => {
   return useContext(DatabaseContext);
 };
