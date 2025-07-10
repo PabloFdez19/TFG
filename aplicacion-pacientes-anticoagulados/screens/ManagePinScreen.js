@@ -2,11 +2,10 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { AuthContext } from '../components/AuthContext';
-// COMENTARIO: Se importa AsyncStorage para manipular el almacenamiento.
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ManagePinScreen = ({ navigation }) => {
-  const { pinIsSet, removePin, logout } = useContext(AuthContext);
+  // ✅ Obtenemos la nueva función 'preparePinSetup' del contexto
+  const { pinIsSet, removePin, preparePinSetup } = useContext(AuthContext);
 
   const handleEnableOrChangePin = () => {
     Alert.alert(
@@ -16,16 +15,8 @@ const ManagePinScreen = ({ navigation }) => {
         { text: "Cancelar", style: "cancel" },
         {
           text: "Continuar",
-          onPress: async () => {
-            // COMENTARIO: Eliminamos la bandera "sin PIN" para forzar la configuración de uno nuevo.
-            await AsyncStorage.removeItem('caregiverPinOptOut');
-            
-            // COMENTARIO: También eliminamos el PIN antiguo si existiera (útil para el caso de "Cambiar PIN").
-            await AsyncStorage.removeItem('caregiverPin');
-            
-            // COMENTARIO: Por último, cerramos sesión. El flujo de autenticación se encargará del resto.
-            logout();
-          },
+          // ✅ Llamamos a la nueva función que lo gestiona todo
+          onPress: () => preparePinSetup(),
         },
       ]
     );
@@ -40,12 +31,7 @@ const ManagePinScreen = ({ navigation }) => {
         {
           text: "Desactivar",
           onPress: async () => {
-            await removePin(); // Esta función debería eliminar el PIN de AsyncStorage.
-            
-            // COMENTARIO: Guardamos explícitamente que el usuario ha elegido NO usar PIN.
-            // Esto asegura que al volver a entrar, no se le pida configurar uno.
-            await AsyncStorage.setItem('caregiverPinOptOut', 'true');
-            
+            await removePin();
             Alert.alert("Éxito", "El PIN se ha eliminado. Tu sesión ahora es ilimitada.");
           },
           style: "destructive",
@@ -85,7 +71,6 @@ const ManagePinScreen = ({ navigation }) => {
   );
 };
 
-// ... (tus estilos aquí)
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -1,11 +1,52 @@
-// src/screens/CaregiverScreen.js
-import React, { useContext } from 'react';
+// screens/CaregiverScreen.js
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../components/AuthContext';
 
+// ✅ Componente para el temporizador de la sesión
+const SessionTimer = () => {
+  const { sessionEndTime, logout } = useContext(AuthContext);
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!sessionEndTime) {
+      setTimeLeft('');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const remaining = sessionEndTime - Date.now();
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        Alert.alert("Sesión Caducada", "Tu sesión ha expirado por seguridad.");
+        logout();
+      } else {
+        const minutes = Math.floor((remaining / 1000 / 60) % 60);
+        const seconds = Math.floor((remaining / 1000) % 60);
+        setTimeLeft(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [sessionEndTime, logout]);
+
+  if (!timeLeft) {
+    return null; // No mostrar nada si no hay tiempo
+  }
+
+  return (
+    <View style={styles.timerContainer}>
+      <Ionicons name="time-outline" size={20} color="#e67e22" />
+      <Text style={styles.timerText}>Tiempo de sesión restante: {timeLeft}</Text>
+    </View>
+  );
+};
+
+
 const CaregiverScreen = ({ navigation }) => {
-  const { logout } = useContext(AuthContext);
+  const { logout, pinIsSet, exitCaregiverMode } = useContext(AuthContext);
 
   const menuItems = [
     {
@@ -31,13 +72,13 @@ const CaregiverScreen = ({ navigation }) => {
       "¿Estás seguro de que quieres salir del Modo Cuidador? Tu sesión temporal se cerrará.",
       [
         { text: "Cancelar", style: "cancel" },
-        { text: "Salir", onPress: logout } // Llama a logout directamente
+        { text: "Salir", onPress: logout }
       ]
     );
   };
-
+  
   const handleExitToHome = () => {
-      logout();
+    exitCaregiverMode();
   };
 
   return (
@@ -45,6 +86,8 @@ const CaregiverScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Modo Cuidador</Text>
         <Text style={styles.subtitle}>Gestión completa de medicaciones</Text>
+        {/* ✅ Mostramos el temporizador solo si hay un PIN configurado */}
+        {pinIsSet && <SessionTimer />}
       </View>
 
       <View style={styles.menuContainer}>
@@ -67,12 +110,15 @@ const CaregiverScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>Gestionar PIN</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+      {pinIsSet && (
+        <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Cerrar Sesión</Text>
+        </TouchableOpacity>
+      )}
+      
       <TouchableOpacity 
         style={styles.exitButton}
-        onPress={handleExitToHome} // 3. Usamos la nueva función
+        onPress={handleExitToHome}
      > 
         <Text style={styles.exitButtonText}>Salir</Text>
       </TouchableOpacity>
@@ -101,6 +147,21 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: 10,
+  },
+  // ✅ Estilos para el nuevo temporizador
+  timerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff3cd',
+    padding: 8,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  timerText: {
+    marginLeft: 8,
+    color: '#856404',
+    fontWeight: 'bold',
   },
   menuContainer: {},
   button: {
@@ -142,7 +203,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  exitButton: { backgroundColor: '#2a86ff', paddingVertical: 15, borderRadius: 10, alignSelf:'center',marginHorizontal: 20, marginVertical: 10, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, width:'80%', shadowOpacity: 0.3, shadowRadius: 3, elevation: 5 },
+  exitButton: { 
+      backgroundColor: '#2a86ff',
+      paddingVertical: 15, 
+      borderRadius: 10, 
+      alignSelf:'center',
+      marginHorizontal: 20, 
+      marginTop: 10,
+      alignItems: 'center', 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      width:'80%', 
+      shadowOpacity: 0.3, 
+      shadowRadius: 3, 
+      elevation: 5 
+    },
   exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
 });
 

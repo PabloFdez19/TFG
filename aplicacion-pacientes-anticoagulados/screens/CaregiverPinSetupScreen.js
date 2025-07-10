@@ -6,7 +6,7 @@ import { AuthContext } from '../components/AuthContext';
 const CaregiverPinSetupScreen = ({ navigation }) => {
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
-  const { setupPin, loginWithoutPin } = useContext(AuthContext); // Cambiado skipPinSetup
+  const { setupPin, skipPinSetup } = useContext(AuthContext);
 
   const handleSetPin = async () => {
     if (pin.length !== 4 || !/^\d+$/.test(pin)) {
@@ -23,7 +23,7 @@ const CaregiverPinSetupScreen = ({ navigation }) => {
   };
 
   const handleSkip = async () => {
-    await loginWithoutPin();
+    await skipPinSetup();
     // La navegación es automática
   };
   
@@ -66,7 +66,6 @@ const CaregiverPinSetupScreen = ({ navigation }) => {
   );
 };
 
-// ... (tus estilos aquí, son correctos)
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -1,28 +1,37 @@
 // HomeScreen.js
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Feather } from '@expo/vector-icons';
-import styles from '../Styles/HomeStyle.js'; // Asumo que tienes tus estilos aquí
+import styles from '../Styles/HomeStyle.js';
 import { useEmergency } from '../components/emergencyCall.js';
 import { AuthContext } from '../components/AuthContext';
-import { useContext } from 'react';
 
 const HomeScreen = ({ navigation }) => {
 
-  const { pinIsSet, caregiverIsLoggedIn } = useContext(AuthContext);
+  const { pinIsSet, caregiverIsLoggedIn, hasOptedOut, skipPinSetup, checkAuthState } = useContext(AuthContext);
 
   const handleCaregiverPress = async () => {
-    // 2. Antes de navegar, comprobamos el estado
-    if (!caregiverIsLoggedIn) {
-      if (pinIsSet) {
-        // Si hay un PIN, vamos a la pantalla de login
-        navigation.navigate('CaregiverPinLogin');
-      } else {
-        // Si no hay PIN, vamos a la pantalla de configuración
-        navigation.navigate('CaregiverPinSetup');
-      }
+    // Primero, refrescamos el estado por si acaso. Es una buena práctica.
+    await checkAuthState();
+
+    if (caregiverIsLoggedIn) {
+      // Si ya está logueado (sesión activa o sin PIN), la navegación principal se encarga
+      return; 
+    }
+    
+    // Si no está logueado, decidimos a dónde ir.
+    if (pinIsSet) {
+      // 1. Si hay un PIN configurado, vamos a la pantalla de login.
+      navigation.navigate('CaregiverPinLogin');
+    } else if (hasOptedOut) {
+      // 2. Si NO hay PIN pero SÍ ha elegido omitirlo, "logueamos" directamente.
+      await skipPinSetup();
+    } else {
+      // 3. Si NO hay PIN y NO ha elegido omitirlo, vamos a la pantalla de configuración.
+      navigation.navigate('CaregiverPinSetup');
     }
   };
+
   const menuItems = [
     {
       title: "Información Educativa",
@@ -47,7 +56,6 @@ const HomeScreen = ({ navigation }) => {
     {
       title: "Modo Cuidador",
       icon: <Feather name="user" size={28} color="#2A7F9F" />,
-      // CAMBIO CLAVE: Apunta al flujo de autenticación
       onPress: handleCaregiverPress,
     }
   ];
@@ -96,6 +104,5 @@ const HomeScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
-
 
 export default HomeScreen;
