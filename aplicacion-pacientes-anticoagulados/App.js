@@ -30,15 +30,57 @@ import ManageReminders from './components/ManageReminders.js';
 import AddReminderScreen from './screens/AddReminderScreen';
 import ManagePinScreen from './screens/ManagePinScreen';
 
-// ... (resto de tus importaciones y configuraciones de notificaciones sin cambios)
+// --- INICIO DE CAMBIOS ---
+
+// 1. Lista de recomendaciones y consejos
+const recommendations = [
+    "Toma tu dosis siempre a la misma hora. La constancia es clave.",
+    "Si olvidas una dosis, ¡no la dupliques! Consulta a tu médico si tienes dudas.",
+    "Mantén tu dieta estable, sin cambios bruscos en el consumo de verduras de hoja verde.",
+    "No tomes nuevos medicamentos, vitaminas o hierbas sin consultar a tu médico.",
+    "Informa siempre a tus médicos y dentistas que tomas anticoagulantes.",
+    "Evita el consumo excesivo de alcohol.",
+    "Usa un cepillo de dientes suave para evitar el sangrado de encías.",
+    "Ante cualquier golpe fuerte o caída, especialmente en la cabeza, acude a urgencias.",
+    "Lleva siempre una identificación que indique tu tratamiento anticoagulante.",
+    "No te saltes los controles de INR. Son esenciales para tu seguridad.",
+];
+
+// 2. Función para mostrar la recomendación diaria
+const showDailyRecommendation = async () => {
+    try {
+        const today = new Date().toISOString().slice(0, 10); // Formato YYYY-MM-DD
+        const lastShownDate = await AsyncStorage.getItem('lastRecommendationDate');
+
+        if (lastShownDate === today) {
+            return; // Ya se mostró hoy
+        }
+
+        const randomIndex = Math.floor(Math.random() * recommendations.length);
+        const recommendation = recommendations[randomIndex];
+
+        Alert.alert(
+            "Consejo del Día 💡",
+            recommendation,
+            [{ text: "Entendido" }]
+        );
+
+        await AsyncStorage.setItem('lastRecommendationDate', today);
+    } catch (error) {
+        console.error("Error al mostrar la recomendación diaria:", error);
+    }
+};
+
+// --- FIN DE CAMBIOS ---
+
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
+    handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
 });
 
 const getNextTrigger = (notification) => {
@@ -64,45 +106,44 @@ const getNextTrigger = (notification) => {
 const Stack = createStackNavigator();
 
 const InitialLoadingScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <ActivityIndicator size="large" color="#2A7F9F" />
-  </View>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#2A7F9F" />
+    </View>
 );
 
 const AppNavigator = () => {
    const { caregiverIsLoggedIn } = useContext(AuthContext);
 
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {caregiverIsLoggedIn ? (
-        <Stack.Group key="caregiver-stack">
-          <Stack.Screen name="Caregiver" component={CaregiverScreen} />
-          <Stack.Screen name="ManagePin" component={ManagePinScreen} />
-          <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
-          <Stack.Screen name="manageMedications" component={ManageMedications} />
-          <Stack.Screen name="manageReminders" component={ManageReminders} />
-          <Stack.Screen name="AddReminder" component={AddReminderScreen} />
-        </Stack.Group>
-      ) : (
-        <Stack.Group key="public-stack">
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="CaregiverPinSetup" component={CaregiverPinSetupScreen} />
-          <Stack.Screen name="CaregiverPinLogin" component={CaregiverPinLoginScreen} />
-          <Stack.Screen name="Education" component={EducationScreen} />
-          <Stack.Screen name="Detalle" component={EducationDetail} options={{ title: '', headerBackTitleVisible: false, ...TransitionPresets.ModalSlideFromBottomIOS }} />
-          <Stack.Screen name="Interactions" component={InteractionsScreen} />
-          <Stack.Screen name="QuizHome" component={QuizHomeScreen} />
-          <Stack.Screen name="Quiz" component={QuizScreen} />
-          <Stack.Screen name="History" component={HistoryScreen} />
-          <Stack.Screen name="Medications" component={MedicationsScreen} />
-        </Stack.Group>
-      )}
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {caregiverIsLoggedIn ? (
+                <Stack.Group key="caregiver-stack">
+                    <Stack.Screen name="Caregiver" component={CaregiverScreen} />
+                    <Stack.Screen name="ManagePin" component={ManagePinScreen} />
+                    <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
+                    <Stack.Screen name="manageMedications" component={ManageMedications} />
+                    <Stack.Screen name="manageReminders" component={ManageReminders} />
+                    <Stack.Screen name="AddReminder" component={AddReminderScreen} />
+                </Stack.Group>
+            ) : (
+                <Stack.Group key="public-stack">
+                    <Stack.Screen name="Home" component={HomeScreen} />
+                    <Stack.Screen name="CaregiverPinSetup" component={CaregiverPinSetupScreen} />
+                    <Stack.Screen name="CaregiverPinLogin" component={CaregiverPinLoginScreen} />
+                    <Stack.Screen name="Education" component={EducationScreen} />
+                    <Stack.Screen name="Detalle" component={EducationDetail} options={{ title: '', headerBackTitleVisible: false, ...TransitionPresets.ModalSlideFromBottomIOS }} />
+                    <Stack.Screen name="Interactions" component={InteractionsScreen} />
+                    <Stack.Screen name="QuizHome" component={QuizHomeScreen} />
+                    <Stack.Screen name="Quiz" component={QuizScreen} />
+                    <Stack.Screen name="History" component={HistoryScreen} />
+                    <Stack.Screen name="Medications" component={MedicationsScreen} />
+                </Stack.Group>
+            )}
+        </Stack.Navigator>
+    );
 };
 
 const AppContent = () => {
-    // ✅ AHORA SOLO NECESITAMOS `isLoading` Y `checkAuthState` PARA EL MANEJO DEL ESTADO DE LA APP
     const { isLoading, checkAuthState } = useContext(AuthContext);
 
     useEffect(() => {
@@ -123,19 +164,22 @@ const AppContent = () => {
                     });
                 }
                 await initializeDatabase();
-                // ✅ YA NO LLAMAMOS a checkAuthState() aquí. AuthProvider lo hace por sí mismo.
+                
+                // --- INICIO DE CAMBIOS ---
+                // 3. Llamamos a la función de recomendación aquí
+                await showDailyRecommendation();
+                // --- FIN DE CAMBIOS ---
+                
             } catch (e) {
                 console.warn(e);
             } finally {
-                // El `isLoading` del contexto se encargará de ocultar el splash screen
-                // cuando `checkAuthState` termine en el proveedor.
                 if (!isLoading) {
                     await SplashScreen.hideAsync();
                 }
             }
         };
         prepare();
-    }, []); // El array de dependencias ahora está vacío
+    }, []);
 
     useEffect(() => {
         if (!isLoading) {
@@ -161,7 +205,6 @@ const AppContent = () => {
     useEffect(() => {
         const subscription = AppState.addEventListener('change', (nextAppState) => {
             if (nextAppState === 'active') {
-                // ✅ Mantenemos esta llamada para refrescar el estado si la app vuelve del segundo plano
                 checkAuthState();
             }
         });
@@ -180,11 +223,11 @@ const AppContent = () => {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <DatabaseProvider>
-        <AppContent />
-      </DatabaseProvider>
-    </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <DatabaseProvider>
+                <AppContent />
+            </DatabaseProvider>
+        </AuthProvider>
+    );
 }

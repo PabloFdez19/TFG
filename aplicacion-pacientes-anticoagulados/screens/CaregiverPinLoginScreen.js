@@ -34,8 +34,11 @@ const CaregiverPinLoginScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.backButtonText}>Atrás</Text>
+      <TouchableOpacity 
+        style={styles.exitButton}
+        onPress={() => navigation.navigate('Home')}
+      > 
+        <Text style={styles.exitButtonText}>Volver a Inicio</Text>
       </TouchableOpacity>
     </View>
   );
@@ -87,14 +90,22 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
       },
-      backButton: {
-        marginTop: 20,
-      },
-      backButtonText: {
-        fontSize: 16,
-        color: '#666',
-        textDecorationLine: 'underline',
-      },
+      exitButton: { 
+      backgroundColor: '#2a86ff',
+      paddingVertical: 15, 
+      borderRadius: 10, 
+      alignSelf:'center',
+      marginHorizontal: 20, 
+      marginTop: 10,
+      alignItems: 'center', 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      width:'80%', 
+      shadowOpacity: 0.3, 
+      shadowRadius: 3, 
+      elevation: 5 
+    },
+    exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
 });
 
 

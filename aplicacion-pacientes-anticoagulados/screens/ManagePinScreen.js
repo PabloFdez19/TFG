@@ -64,8 +64,11 @@ const ManagePinScreen = ({ navigation }) => {
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Volver</Text>
+      <TouchableOpacity 
+        style={styles.exitButton}
+        onPress={() => navigation.goBack()}
+      > 
+        <Text style={styles.exitButtonText}>Volver</Text>
       </TouchableOpacity>
     </View>
   );
@@ -117,6 +120,22 @@ const styles = StyleSheet.create({
         color: '#666',
         textDecorationLine: 'underline',
       },
+      exitButton: { 
+      backgroundColor: '#2a86ff',
+      paddingVertical: 15, 
+      borderRadius: 10, 
+      alignSelf:'center',
+      marginHorizontal: 20, 
+      marginTop: 10,
+      alignItems: 'center', 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      width:'80%', 
+      shadowOpacity: 0.3, 
+      shadowRadius: 3, 
+      elevation: 5 
+    },
+    exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
 });
 
 export default ManagePinScreen;
