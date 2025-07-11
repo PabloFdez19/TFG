@@ -86,7 +86,6 @@ const CaregiverScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Modo Cuidador</Text>
         <Text style={styles.subtitle}>Gestión completa de medicaciones</Text>
-        {/* ✅ Mostramos el temporizador solo si hay un PIN configurado */}
         {pinIsSet && <SessionTimer />}
       </View>
 
@@ -148,7 +147,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
-  // ✅ Estilos para el nuevo temporizador
   timerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -162,6 +160,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: '#856404',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   menuContainer: {},
   button: {
