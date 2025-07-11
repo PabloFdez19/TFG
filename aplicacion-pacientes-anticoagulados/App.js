@@ -30,9 +30,7 @@ import ManageReminders from './components/ManageReminders.js';
 import AddReminderScreen from './screens/AddReminderScreen';
 import ManagePinScreen from './screens/ManagePinScreen';
 
-// --- INICIO DE CAMBIOS ---
 
-// 1. Lista de recomendaciones y consejos
 const recommendations = [
     "Toma tu dosis siempre a la misma hora. La constancia es clave.",
     "Si olvidas una dosis, ¡no la dupliques! Consulta a tu médico si tienes dudas.",
@@ -46,7 +44,7 @@ const recommendations = [
     "No te saltes los controles de INR. Son esenciales para tu seguridad.",
 ];
 
-// 2. Función para mostrar la recomendación diaria
+
 const showDailyRecommendation = async () => {
     try {
         const today = new Date().toISOString().slice(0, 10); // Formato YYYY-MM-DD
@@ -70,8 +68,6 @@ const showDailyRecommendation = async () => {
         console.error("Error al mostrar la recomendación diaria:", error);
     }
 };
-
-// --- FIN DE CAMBIOS ---
 
 
 Notifications.setNotificationHandler({
@@ -164,11 +160,7 @@ const AppContent = () => {
                     });
                 }
                 await initializeDatabase();
-                
-                // --- INICIO DE CAMBIOS ---
-                // 3. Llamamos a la función de recomendación aquí
                 await showDailyRecommendation();
-                // --- FIN DE CAMBIOS ---
                 
             } catch (e) {
                 console.warn(e);
@@ -189,11 +181,51 @@ const AppContent = () => {
     
     useEffect(() => {
         const receivedListener = Notifications.addNotificationReceivedListener(async (notification) => {
-            // ... (tu lógica de notificaciones sin cambios)
+            const { data } = notification.request.content;
+            console.log("📬 Notificación recibida. Procesando...");
+
+            if (data && data.isRecurring === false) {
+                console.log("Tipo: Notificación de un solo uso. Limpiando...");
+                const medicationId = data.medicationId;
+
+                if (!medicationId) {
+                    console.log("Error: No se encontró 'medicationId' en los datos.");
+                    return;
+                }
+
+                try {
+                    const existingMedsJson = await AsyncStorage.getItem('medications') || '[]';
+                    const medications = JSON.parse(existingMedsJson);
+                    
+                    const updatedMeds = medications.map(med => 
+                        med.id === medicationId 
+                            ? { ...med, reminder: null, notificationIds: [] }
+                            : med
+                    );
+
+                    await AsyncStorage.setItem('medications', JSON.stringify(updatedMeds));
+                    console.log(`✅ Recordatorio para medicación ${medicationId} limpiado de AsyncStorage.`);
+
+                } catch (error) {
+                    console.error("Error limpiando el recordatorio al recibir:", error);
+                }
+            }
         });
 
         const responseListener = Notifications.addNotificationResponseReceivedListener(async (response) => {
-            // ... (tu lógica de notificaciones sin cambios)
+            const { data, content } = response.notification.request;
+
+            console.log("👆 Usuario ha pulsado la notificación.");
+
+            if (data && data.isRecurring === true) {
+                console.log("Tipo: Notificación recurrente. Reprogramando...");
+                const nextTrigger = getNextTrigger(response.notification);
+                await Notifications.scheduleNotificationAsync({
+                    content,
+                    trigger: nextTrigger,
+                });
+                console.log("✅ Notificación recurrente reprogramada.");
+            }
         });
 
         return () => {

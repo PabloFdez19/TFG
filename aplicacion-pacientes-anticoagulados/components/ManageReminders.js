@@ -148,7 +148,7 @@ const ManageReminders = ({ navigation }) => {
 // Estilos (sin cambios)
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#f2f2f7', paddingTop: 70 },
-    exitButton: { backgroundColor: '#2a86ff', paddingVertical: 15, borderRadius: 10, marginHorizontal: 20, marginVertical: 10, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 5 },
+    exitButton: { backgroundColor: '#2a86ff', paddingVertical: 15, borderRadius: 10, marginHorizontal: 20, marginVertical: 10, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 5, marginBottom: 50 },
     exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
     medItem: { backgroundColor: 'white', padding: 15, marginHorizontal: 15, marginVertical: 8, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
     medInfo: { flex: 1 },

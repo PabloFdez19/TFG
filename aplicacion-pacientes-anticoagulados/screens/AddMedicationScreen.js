@@ -1,3 +1,5 @@
+// AddMedicationScreen.js
+
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -75,7 +77,9 @@ const AddMedicationScreen = ({ route, navigation }) => {
       await AsyncStorage.setItem('medications', JSON.stringify(medications));
       
       Alert.alert('Medicamento Actualizado', 'Los datos del medicamento se han actualizado correctamente.', [
-        { text: 'Entendido', onPress: () => navigation.navigate('Medications') }
+        // --- CAMBIO ---
+        // Se navega a la pantalla de gestión del cuidador, no a la del paciente.
+        { text: 'Entendido', onPress: () => navigation.navigate('manageMedications') }
       ]);
     } catch (error) {
       console.error('Error updating medication:', error);
@@ -101,7 +105,9 @@ const AddMedicationScreen = ({ route, navigation }) => {
         'Medicamento Guardado', 
         '¿Quieres programar un recordatorio?',
         [
-          { text: 'Ahora no', onPress: () => navigation.navigate('Medications'), style: 'cancel' },
+          // --- CAMBIO ---
+          // Al decir "Ahora no", se navega a la pantalla de gestión del cuidador.
+          { text: 'Ahora no', onPress: () => navigation.navigate('manageMedications'), style: 'cancel' },
           {
             text: 'Sí, programar', 
             onPress: () => {
@@ -130,7 +136,6 @@ const AddMedicationScreen = ({ route, navigation }) => {
         style={styles.input}
         value={doses}
         onChangeText={text => {
-          // Permite solo números enteros
           const cleanedText = text.replace(/[^0-9]/g, '');
           setDoses(cleanedText);
         }}

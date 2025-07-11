@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [caregiverIsLoggedIn, setCaregiverIsLoggedIn] = useState(false);
   const [pinIsSet, setPinIsSet] = useState(false);
   const [hasOptedOut, setHasOptedOut] = useState(false);
-  // ✅ NUEVO ESTADO: Guardamos la hora de finalización de la sesión
   const [sessionEndTime, setSessionEndTime] = useState(null);
 
   const checkAuthState = useCallback(async () => {
@@ -27,20 +26,16 @@ export const AuthProvider = ({ children }) => {
       const userHasOptedOut = optedOut === 'true';
       setHasOptedOut(userHasOptedOut);
 
-      if (userHasOptedOut) {
-        setCaregiverIsLoggedIn(true);
-        setSessionEndTime(null); // No hay sesión con tiempo límite
-        return;
-      }
-
       if (isPinCurrentlySet && loginTimestamp) {
         const startTime = parseInt(loginTimestamp, 10);
         const endTime = startTime + SESSION_DURATION;
         const timeElapsed = Date.now() - startTime;
 
         if (timeElapsed < SESSION_DURATION) {
-          setCaregiverIsLoggedIn(true);
-          setSessionEndTime(endTime); // Establecemos el tiempo de finalización
+          // --- CAMBIO ---
+          // Ya no establecemos el estado de login aquí. Solo guardamos la hora de fin de sesión.
+          // setCaregiverIsLoggedIn(true); // Esta línea se ha eliminado.
+          setSessionEndTime(endTime);
         } else {
           setCaregiverIsLoggedIn(false);
           await AsyncStorage.removeItem('caregiverSessionTimestamp');
@@ -67,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     if (pin === storedPin) {
       const now = new Date().getTime();
       await AsyncStorage.setItem('caregiverSessionTimestamp', now.toString());
-      setSessionEndTime(now + SESSION_DURATION); // Establecemos el tiempo de finalización
+      setSessionEndTime(now + SESSION_DURATION);
       setCaregiverIsLoggedIn(true);
       return true;
     }
@@ -77,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem('caregiverSessionTimestamp');
     setCaregiverIsLoggedIn(false);
-    setSessionEndTime(null); // Limpiamos el tiempo
+    setSessionEndTime(null);
   };
   
   const setupPin = async (pin) => {
@@ -117,6 +112,14 @@ export const AuthProvider = ({ children }) => {
     setSessionEndTime(null);
   };
 
+  // --- CAMBIO: NUEVA FUNCIÓN AÑADIDA ---
+  // Esta función activa la vista del cuidador si hay una sesión válida esperando.
+  const activateCaregiverMode = () => {
+    if (sessionEndTime && Date.now() < sessionEndTime) {
+      setCaregiverIsLoggedIn(true);
+    }
+  };
+
   const exitCaregiverMode = () => {
     setCaregiverIsLoggedIn(false);
   };
@@ -128,7 +131,7 @@ export const AuthProvider = ({ children }) => {
         caregiverIsLoggedIn,
         pinIsSet,
         hasOptedOut,
-        sessionEndTime, // ✅ Exportamos el nuevo estado
+        sessionEndTime,
         login,
         logout,
         setupPin,
@@ -137,6 +140,8 @@ export const AuthProvider = ({ children }) => {
         checkAuthState,
         preparePinSetup,
         exitCaregiverMode,
+        // --- CAMBIO: SE EXPONE LA NUEVA FUNCIÓN ---
+        activateCaregiverMode,
       }}
     >
       {children}

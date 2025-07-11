@@ -8,26 +8,26 @@ import { AuthContext } from '../components/AuthContext';
 
 const HomeScreen = ({ navigation }) => {
 
-  const { pinIsSet, caregiverIsLoggedIn, hasOptedOut, skipPinSetup, checkAuthState } = useContext(AuthContext);
+  // --- CAMBIO: Traemos los nuevos valores del contexto ---
+  const { pinIsSet, caregiverIsLoggedIn, hasOptedOut, skipPinSetup, checkAuthState, sessionEndTime, activateCaregiverMode } = useContext(AuthContext);
 
   const handleCaregiverPress = async () => {
-    // Primero, refrescamos el estado por si acaso. Es una buena práctica.
+    // Primero, refrescamos el estado por si acaso.
     await checkAuthState();
 
-    if (caregiverIsLoggedIn) {
-      // Si ya está logueado (sesión activa o sin PIN), la navegación principal se encarga
-      return; 
+    // --- CAMBIO: Nueva lógica para activar una sesión existente ---
+    // 1. Comprobamos si hay una sesión válida esperando ser activada.
+    if (sessionEndTime && Date.now() < sessionEndTime) {
+      activateCaregiverMode(); // Esto cambiará el estado y provocará el cambio de vista.
+      return; // Salimos de la función.
     }
-    
-    // Si no está logueado, decidimos a dónde ir.
+
+    // 2. Si no había sesión en espera, la lógica anterior se ejecuta.
     if (pinIsSet) {
-      // 1. Si hay un PIN configurado, vamos a la pantalla de login.
       navigation.navigate('CaregiverPinLogin');
     } else if (hasOptedOut) {
-      // 2. Si NO hay PIN pero SÍ ha elegido omitirlo, "logueamos" directamente.
-      await skipPinSetup();
+      await skipPinSetup(); // Esta función ya activa el modo cuidador.
     } else {
-      // 3. Si NO hay PIN y NO ha elegido omitirlo, vamos a la pantalla de configuración.
       navigation.navigate('CaregiverPinSetup');
     }
   };
