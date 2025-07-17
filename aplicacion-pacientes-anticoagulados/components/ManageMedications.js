@@ -1,8 +1,11 @@
+// components/ManageMedications.js
+
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Notifications from 'expo-notifications';
 
 const ManageMedications = ({ navigation }) => {
     const [medications, setMedications] = useState([]);
@@ -24,15 +27,26 @@ const ManageMedications = ({ navigation }) => {
     );
 
     const deleteMedication = async (id) => {
+        const medicationToDelete = medications.find(m => m.id === id);
+        if (!medicationToDelete) return;
+
         Alert.alert(
             "Eliminar Medicamento",
-            "¿Estás seguro de que quieres eliminar este medicamento?",
+            `¿Estás seguro de que quieres eliminar "${medicationToDelete.name}" y todas sus dosis? Esta acción no se puede deshacer.`,
             [
                 { text: "Cancelar", style: "cancel" },
                 {
                     text: "Eliminar",
                     onPress: async () => {
                         try {
+                            if (medicationToDelete.doses && medicationToDelete.doses.length > 0) {
+                                for (const dose of medicationToDelete.doses) {
+                                    if (dose.reminder?.notificationId) {
+                                        await Notifications.cancelScheduledNotificationAsync(dose.reminder.notificationId);
+                                    }
+                                }
+                            }
+
                             const updatedMeds = medications.filter(m => m.id !== id);
                             await AsyncStorage.setItem('medications', JSON.stringify(updatedMeds));
                             setMedications(updatedMeds);
@@ -50,22 +64,24 @@ const ManageMedications = ({ navigation }) => {
         <View style={styles.medItem}>
             <View style={styles.medInfo}>
                 <Text style={styles.medName}>{item.name}</Text>
-                <Text style={styles.medDose}>Dosis: {item.doses}</Text>
+                <Text style={styles.medDose}>
+                    {(item.doses || []).filter(d => new Date(d.time) > new Date()).length} dosis futuras programadas
+                </Text>
             </View>
 
             <View style={styles.actionsContainer}>
                 <TouchableOpacity
                     style={[styles.actionButton, styles.editButton]}
-                    onPress={() => navigation.navigate('AddMedication', { medication: item })}
+                    onPress={() => navigation.navigate('ManageDoses', { medicationId: item.id })}
                 >
-                    <Ionicons name="pencil-outline" size={20} color="white" />
+                    <Ionicons name="calendar-outline" size={22} color="white" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.actionButton, styles.deleteButton]}
                     onPress={() => deleteMedication(item.id)}
                 >
-                    <Ionicons name="trash-outline" size={20} color="white" />
+                    <Ionicons name="trash-outline" size={22} color="white" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -77,18 +93,28 @@ const ManageMedications = ({ navigation }) => {
                 data={medications}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
+                ListHeaderComponent={
+                    <View>
+                        <Text style={styles.headerTitle}>Gestionar Medicamentos</Text>
+                    </View>
+                }
                 ListEmptyComponent={
-                    <Text style={styles.emptyText}>No hay medicamentos guardados</Text>
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>No hay medicamentos guardados.</Text>
+                        <Text style={styles.emptySubText}>
+                            Ve a "Añadir Medicación" para empezar.
+                        </Text>
+                    </View>
                 }
                 contentContainerStyle={{ paddingBottom: 30 }}
             />
+            {/* --- MODIFICACIÓN --- */}
+            {/* Se ha eliminado el botón de "Añadir Nuevo Medicamento" de esta pantalla */}
             <TouchableOpacity 
-                      style={styles.exitButton}
-                      onPress={() => navigation.navigate('Caregiver')}
-                    > 
-                    <View>
-                      <Text style={styles.exitButtonText}> Salir</Text>
-                    </View>
+                style={styles.exitButton}
+                onPress={() => navigation.navigate('Caregiver')}
+            > 
+                <Text style={styles.exitButtonText}>Volver</Text>
             </TouchableOpacity>
         </View>
     );
@@ -100,12 +126,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#f2f2f7',
         paddingTop: 70,
     },
+    headerTitle: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#2A7F9F',
+        textAlign: 'center',
+        marginVertical: 20,
+    },
     medItem: {
         backgroundColor: 'white',
-        padding: 15,
+        padding: 20,
         marginHorizontal: 15,
         marginVertical: 8,
-        borderRadius: 10,
+        borderRadius: 15,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -119,7 +152,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     medName: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 5,
     },
@@ -132,52 +165,45 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     actionButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
     },
     editButton: {
-        backgroundColor: '#f39c12',
+        backgroundColor: '#3498db',
     },
     deleteButton: {
         backgroundColor: '#e74c3c',
     },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 60,
+        paddingHorizontal: 20,
+    },
     emptyText: {
         textAlign: 'center',
-        marginTop: 60,
         fontSize: 18,
         color: '#666',
-    },
-    addButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#27ae60',
-        paddingVertical: 15,
-        borderRadius: 10,
-        margin: 15,
-    },
-    addButtonText: {
-        color: 'white',
-        fontSize: 18,
         fontWeight: 'bold',
-        marginLeft: 10,
+    },
+    emptySubText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#888',
+        marginTop: 8,
     },
     exitButton: {
-        backgroundColor: '#2a86ff',
+        backgroundColor: '#8e44ad',
         paddingVertical: 15,
-        paddingHorizontal: 20,
         borderRadius: 10,
         alignSelf: 'stretch',
-        margin: 20,
+        marginHorizontal: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
         elevation: 5,
         marginBottom: 45,
     },
@@ -185,7 +211,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-  },
+    },
 });
 
 export default ManageMedications;

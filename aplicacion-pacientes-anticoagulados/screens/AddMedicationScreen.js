@@ -1,38 +1,16 @@
-// AddMedicationScreen.js
+// screens/AddMedicationScreen.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
-const AddMedicationScreen = ({ route, navigation }) => {
+const AddMedicationScreen = ({ navigation }) => {
   const [medName, setMedName] = useState('');
-  const [doses, setDoses] = useState('');
-  const [instructions, setInstructions] = useState('');
-  const [medicationToEdit, setMedicationToEdit] = useState(null);
-
-  useEffect(() => {
-    if (route.params?.medication) {
-      const { medication } = route.params;
-      setMedicationToEdit(medication);
-      setMedName(medication.name);
-      setDoses(medication.doses);
-      setInstructions(medication.instructions || '');
-      navigation.setOptions({ title: 'Editar Medicamento' });
-    } else {
-      navigation.setOptions({ title: 'Añadir Medicamento' });
-    }
-  }, [route.params?.medication]);
 
   const handleSave = async () => {
     if (!medName.trim()) {
       Alert.alert('Falta información', 'Por favor, escribe el nombre del medicamento.');
-      return;
-    }
-
-    const doseValue = parseInt(doses, 10);
-    if (isNaN(doseValue) || doseValue <= 0) {
-      Alert.alert('Dosis inválida', 'Por favor, escribe un número entero positivo para la dosis.');
       return;
     }
 
@@ -41,8 +19,7 @@ const AddMedicationScreen = ({ route, navigation }) => {
       const medications = JSON.parse(existingMeds);
 
       const nombreDuplicado = medications.some(med =>
-        med.name.trim().toLowerCase() === medName.trim().toLowerCase() &&
-        (!medicationToEdit || med.id !== medicationToEdit.id)
+        med.name.trim().toLowerCase() === medName.trim().toLowerCase()
       );
 
       if (nombreDuplicado) {
@@ -53,71 +30,29 @@ const AddMedicationScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (medicationToEdit) {
-        await updateMedication();
-      } else {
-        await createNewMedication();
-      }
-    } catch (error) {
-      console.error('Error al validar medicamentos:', error);
-    }
-  };
+      const newMedication = {
+        id: Date.now().toString(),
+        name: medName,
+        doses: [], // El array de dosis se mantiene para almacenar las tomas generadas
+      };
 
-  const updateMedication = async () => {
-    const updatedMed = { 
-      ...medicationToEdit, 
-      name: medName, 
-      doses, 
-      instructions 
-    };
-    try {
-      const existingMeds = await AsyncStorage.getItem('medications') || '[]';
-      let medications = JSON.parse(existingMeds);
-      medications = medications.map(med => med.id === medicationToEdit.id ? updatedMed : med);
-      await AsyncStorage.setItem('medications', JSON.stringify(medications));
-      
-      Alert.alert('Medicamento Actualizado', 'Los datos del medicamento se han actualizado correctamente.', [
-        // --- CAMBIO ---
-        // Se navega a la pantalla de gestión del cuidador, no a la del paciente.
-        { text: 'Entendido', onPress: () => navigation.navigate('manageMedications') }
-      ]);
-    } catch (error) {
-      console.error('Error updating medication:', error);
-    }
-  };
-
-  const createNewMedication = async () => {
-    const newMedication = { 
-      id: Date.now().toString(), 
-      name: medName, 
-      doses, 
-      instructions, 
-      notificationId: null, 
-      reminder: null 
-    };
-    try {
-      const existingMeds = await AsyncStorage.getItem('medications') || '[]';
-      const medications = JSON.parse(existingMeds);
       medications.push(newMedication);
       await AsyncStorage.setItem('medications', JSON.stringify(medications));
 
       Alert.alert(
-        'Medicamento Guardado', 
-        '¿Quieres programar un recordatorio?',
+        'Medicamento Guardado',
+        'Ahora puedes configurar las dosis y horarios para este medicamento.',
         [
-          // --- CAMBIO ---
-          // Al decir "Ahora no", se navega a la pantalla de gestión del cuidador.
-          { text: 'Ahora no', onPress: () => navigation.navigate('manageMedications'), style: 'cancel' },
           {
-            text: 'Sí, programar', 
-            onPress: () => {
-              navigation.navigate('AddReminder', { medication: newMedication });
-            }
-          }
+            text: 'Configurar Dosis',
+            // MODIFICADO: Navega a la nueva pantalla unificada ManageDoses
+            onPress: () => navigation.replace('ManageDoses', { medicationId: newMedication.id }),
+          },
         ]
       );
-    } catch (error) { 
-      console.error('Error saving new medication:', error); 
+    } catch (error) {
+      console.error('Error al guardar el medicamento:', error);
+      Alert.alert('Error', 'No se pudo guardar el medicamento.');
     }
   };
 
@@ -128,35 +63,13 @@ const AddMedicationScreen = ({ route, navigation }) => {
         style={styles.input}
         value={medName}
         onChangeText={setMedName}
-        placeholder="Ej: Paracetamol"
-      />
-
-      <Text style={styles.label}>Dosis</Text>
-      <TextInput
-        style={styles.input}
-        value={doses}
-        onChangeText={text => {
-          const cleanedText = text.replace(/[^0-9]/g, '');
-          setDoses(cleanedText);
-        }}
-        keyboardType="numeric"
-        placeholder="Ej: 1"
-      />
-
-      <Text style={styles.label}>Instrucciones de Uso (Opcional)</Text>
-      <TextInput
-        style={[styles.input, { height: 100 }]}
-        value={instructions}
-        onChangeText={setInstructions}
-        placeholder="Ej: Tomar después de comer"
-        multiline
+        placeholder="Ej: Sintrom"
       />
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Ionicons name="checkmark-circle-outline" size={30} color="white" />
-        <Text style={styles.saveButtonText}>
-          {medicationToEdit ? "Actualizar Medicamento" : "Guardar Medicamento"}
-        </Text>
+        {/* MODIFICADO: El texto del botón ahora es más claro */}
+        <Text style={styles.saveButtonText}>Guardar y Configurar Dosis</Text>
       </TouchableOpacity>
     </View>
   );
@@ -165,28 +78,28 @@ const AddMedicationScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 25, backgroundColor: '#fff', paddingTop: 70 },
   label: { fontSize: 18, fontWeight: '600', color: '#333', marginBottom: 8 },
-  input: { 
-    backgroundColor: '#f2f2f7', 
-    padding: 15, 
-    borderRadius: 10, 
-    fontSize: 18, 
+  input: {
+    backgroundColor: '#f2f2f7',
+    padding: 15,
+    borderRadius: 10,
+    fontSize: 18,
     marginBottom: 20,
   },
-  saveButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    backgroundColor: '#27ae60', 
-    paddingVertical: 18, 
-    borderRadius: 15, 
-    marginTop: 'auto', 
-    marginBottom: 20 
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#27ae60',
+    paddingVertical: 18,
+    borderRadius: 15,
+    marginTop: 'auto',
+    marginBottom: 20,
   },
-  saveButtonText: { 
-    color: 'white', 
-    fontSize: 20, 
-    fontWeight: 'bold', 
-    marginLeft: 12 
+  saveButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 12,
   },
 });
 

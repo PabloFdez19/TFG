@@ -26,9 +26,11 @@ import CaregiverPinSetupScreen from './screens/CaregiverPinSetupScreen';
 import CaregiverPinLoginScreen from './screens/CaregiverPinLoginScreen';
 import AddMedicationScreen from './screens/AddMedicationScreen.js';
 import ManageMedications from './components/ManageMedications.js';
-import ManageReminders from './components/ManageReminders.js';
-import AddReminderScreen from './screens/AddReminderScreen';
 import ManagePinScreen from './screens/ManagePinScreen';
+import ManageDosesScreen from './screens/ManageDosesScreen';
+// MODIFICADO: Importaciones añadidas para arreglar la navegación
+import ManageReminders from './components/ManageReminders';
+import AddReminderScreen from './screens/AddReminderScreen';
 
 
 const recommendations = [
@@ -113,11 +115,13 @@ const AppNavigator = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             {caregiverIsLoggedIn ? (
+                // MODIFICADO: Se han añadido las pantallas que faltaban al stack del cuidador
                 <Stack.Group key="caregiver-stack">
                     <Stack.Screen name="Caregiver" component={CaregiverScreen} />
                     <Stack.Screen name="ManagePin" component={ManagePinScreen} />
                     <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
                     <Stack.Screen name="manageMedications" component={ManageMedications} />
+                    <Stack.Screen name="ManageDoses" component={ManageDosesScreen} />
                     <Stack.Screen name="manageReminders" component={ManageReminders} />
                     <Stack.Screen name="AddReminder" component={AddReminderScreen} />
                 </Stack.Group>

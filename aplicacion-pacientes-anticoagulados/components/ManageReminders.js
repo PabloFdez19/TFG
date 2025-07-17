@@ -1,3 +1,5 @@
+// components/ManageReminders.js
+
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,49 +8,75 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 const ManageReminders = ({ navigation }) => {
-    const [medications, setMedications] = useState([]);
+    const [dosesWithReminders, setDosesWithReminders] = useState([]);
 
-    const loadMedications = useCallback(async () => {
+    const loadDosesWithReminders = useCallback(async () => {
         try {
             const savedMeds = await AsyncStorage.getItem('medications');
-            const meds = savedMeds ? JSON.parse(savedMeds) : [];
-            setMedications(meds);
+            const medications = savedMeds ? JSON.parse(savedMeds) : [];
+            
+            const allDosesWithReminders = [];
+            medications.forEach(med => {
+                if (med.doses && med.doses.length > 0) {
+                    med.doses.forEach(dose => {
+                        // Solo incluir dosis futuras que tengan un recordatorio
+                        if (dose.reminder && new Date(dose.time) > new Date()) { 
+                            allDosesWithReminders.push({
+                                ...dose,
+                                medicationId: med.id,
+                                medicationName: med.name,
+                            });
+                        }
+                    });
+                }
+            });
+
+            allDosesWithReminders.sort((a, b) => new Date(a.time) - new Date(b.time));
+            setDosesWithReminders(allDosesWithReminders);
+
         } catch (error) {
-            console.error('Error loading medications:', error);
+            console.error('Error cargando los recordatorios:', error);
         }
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            loadMedications();
-        }, [loadMedications])
-    );
+    useFocusEffect(loadDosesWithReminders);
 
-    const deleteReminder = async (medicationId) => {
+    const deleteReminder = async (medicationId, doseId) => {
         Alert.alert(
             "Eliminar Recordatorio",
-            "¿Estás seguro de que quieres eliminar este recordatorio?",
+            "¿Estás seguro? El recordatorio se cancelará, pero la dosis programada se mantendrá sin aviso.",
             [
                 { text: "Cancelar", style: "cancel" },
                 {
                     text: "Eliminar",
                     onPress: async () => {
                         try {
-                            const medToDelete = medications.find(m => m.id === medicationId);
-                            if (medToDelete && medToDelete.notificationIds) {
-                                for (const id of medToDelete.notificationIds) {
-                                    await Notifications.cancelScheduledNotificationAsync(id);
+                            const savedMeds = await AsyncStorage.getItem('medications');
+                            let meds = savedMeds ? JSON.parse(savedMeds) : [];
+                            let notificationIdToDelete = null;
+
+                            const updatedMeds = meds.map(med => {
+                                if (med.id === medicationId) {
+                                    const updatedDoses = med.doses.map(dose => {
+                                        if (dose.id === doseId) {
+                                            notificationIdToDelete = dose.reminder?.notificationId;
+                                            return { ...dose, reminder: undefined }; // Elimina el objeto reminder
+                                        }
+                                        return dose;
+                                    });
+                                    return { ...med, doses: updatedDoses };
                                 }
+                                return med;
+                            });
+                            
+                            if (notificationIdToDelete) {
+                                await Notifications.cancelScheduledNotificationAsync(notificationIdToDelete);
                             }
 
-                            const updatedMeds = medications.map(med =>
-                                med.id === medicationId ? { ...med, notificationIds: [], reminder: null } : med
-                            );
-                            
                             await AsyncStorage.setItem('medications', JSON.stringify(updatedMeds));
-                            setMedications(updatedMeds);
+                            loadDosesWithReminders(); // Recargar la lista
                         } catch (error) {
-                            console.error('Error deleting reminder:', error);
+                            console.error('Error eliminando el recordatorio:', error);
                         }
                     },
                     style: "destructive",
@@ -57,114 +85,171 @@ const ManageReminders = ({ navigation }) => {
         );
     };
 
-    // --- FUNCIÓN CORREGIDA PARA LEER EL TEXTO DEL RECORDATORIO ---
-    const getReminderText = (reminder) => {
-        if (!reminder) return 'Sin recordatorio';
-
-        const time = new Date(reminder.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        switch (reminder.frequency) {
-            case 'single':
-                return `Una vez: ${time}`;
-            case 'daily':
-                return `Diario: ${time}`;
-            case 'cyclical':
-                return `Cada ${reminder.intervalHours} horas`;
-            case 'recurrent':
-                const daysOfWeek = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
-                const days = reminder.selectedDays.map(d => daysOfWeek[d]).join(', ');
-                return `Días Específicos: ${time} (${days})`;
-            default:
-                return `Recordatorio programado: ${time}`;
-        }
-    };
-
     const renderItem = ({ item }) => (
         <View style={styles.medItem}>
             <View style={styles.medInfo}>
-                <Text style={styles.medName}>{item.name}</Text>
-                <Text style={styles.medDose}>Dosis: {item.doses}</Text>
-                {item.instructions && (
-                    <Text style={styles.instructionsText}>Instrucciones: {item.instructions}</Text>
-                )}
+                <Text style={styles.medName}>{item.medicationName}</Text>
+                <Text style={styles.medDose}>Dosis: {item.amount} {item.unit || ''}</Text>
                 
-                {item.reminder ? (
-                    <View style={styles.reminderDetail}>
-                        <Ionicons name="alarm-outline" size={20} color="#34495e" />
-                        <Text style={styles.reminderText}>{getReminderText(item.reminder)}</Text>
-                    </View>
-                ) : (
-                    <Text style={styles.noReminderText}>Sin recordatorio programado</Text>
-                )}
+                <View style={styles.reminderDetail}>
+                    <Ionicons name="calendar-outline" size={20} color="#34495e" />
+                    <Text style={styles.reminderText}>
+                        {new Date(item.time).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}
+                    </Text>
+                </View>
             </View>
 
-            {item.reminder ? (
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.editButton]}
-                        onPress={() => navigation.navigate('AddReminder', { medication: item })}
-                    >
-                        <Ionicons name="pencil-outline" size={18} color="white" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.deleteButton]}
-                        onPress={() => deleteReminder(item.id)}
-                    >
-                        <Ionicons name="trash-outline" size={18} color="white" />
-                    </TouchableOpacity>
-                </View>
-            ) : (
+            <View style={styles.actionsContainer}>
                 <TouchableOpacity
-                    style={styles.addReminderButton}
-                    onPress={() => navigation.navigate('AddReminder', { medication: item })}
+                    style={[styles.actionButton, styles.editButton]}
+                    onPress={() => navigation.navigate('AddReminder', { medicationId: item.medicationId, doseId: item.id })}
                 >
-                    <Ionicons name="add" size={20} color="white" />
-                    <Text style={styles.addReminderText}>Añadir</Text>
+                    <Ionicons name="pencil-outline" size={20} color="white" />
                 </TouchableOpacity>
-            )}
+
+                <TouchableOpacity
+                    style={[styles.actionButton, styles.deleteButton]}
+                    onPress={() => deleteReminder(item.medicationId, item.id)}
+                >
+                    <Ionicons name="trash-outline" size={20} color="white" />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={medications}
+                data={dosesWithReminders}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
-                ListEmptyComponent={<Text style={styles.emptyText}>No hay medicamentos guardados</Text>}
+                ListHeaderComponent={<Text style={styles.headerTitle}>Recordatorios Activos</Text>}
+                ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>No hay recordatorios activos.</Text>
+                        <Text style={styles.emptySubText}>
+                            Puedes añadir o modificar recordatorios desde "Gestionar Medicamentos".
+                        </Text>
+                    </View>
+                }
                 contentContainerStyle={{ paddingBottom: 30 }}
             />
             <TouchableOpacity 
                 style={styles.exitButton}
                 onPress={() => navigation.navigate('Caregiver')}
             > 
-                <Text style={styles.exitButtonText}>Salir</Text>
+                <Text style={styles.exitButtonText}>Volver</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
-// Estilos (sin cambios)
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f2f2f7', paddingTop: 70 },
-    exitButton: { backgroundColor: '#2a86ff', paddingVertical: 15, borderRadius: 10, marginHorizontal: 20, marginVertical: 10, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 5, marginBottom: 50 },
-    exitButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-    medItem: { backgroundColor: 'white', padding: 15, marginHorizontal: 15, marginVertical: 8, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
-    medInfo: { flex: 1 },
-    medName: { fontSize: 18, fontWeight: 'bold', marginBottom: 5 },
-    medDose: { fontSize: 16, color: '#555', marginBottom: 5 },
-    instructionsText: { fontSize: 14, color: '#7f8c8d', marginBottom: 10, fontStyle: 'italic' },
-    reminderDetail: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
-    reminderText: { fontSize: 16, color: '#34495e', marginLeft: 10 },
-    noReminderText: { fontSize: 16, color: '#e74c3c', fontStyle: 'italic', marginTop: 5 },
-    actionsContainer: { flexDirection: 'row', gap: 10 },
-    actionButton: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-    editButton: { backgroundColor: '#f39c12' },
-    deleteButton: { backgroundColor: '#e74c3c' },
-    addReminderButton: { backgroundColor: '#27ae60', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center' },
-    addReminderText: { color: 'white', fontSize: 16, fontWeight: '500', marginLeft: 5 },
-    emptyText: { textAlign: 'center', marginTop: 60, fontSize: 18, color: '#666' },
+    container: {
+        flex: 1,
+        backgroundColor: '#f2f2f7',
+        paddingTop: 70,
+    },
+    headerTitle: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#2A7F9F',
+        textAlign: 'center',
+        marginVertical: 20,
+    },
+    medItem: {
+        backgroundColor: 'white',
+        padding: 20,
+        marginHorizontal: 15,
+        marginVertical: 8,
+        borderRadius: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
+    },
+    medInfo: {
+        flex: 1,
+    },
+    medName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    medDose: {
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 10,
+    },
+    reminderDetail: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#e7f3ff',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+        alignSelf: 'flex-start',
+    },
+    reminderText: {
+        fontSize: 15,
+        color: '#2980b9',
+        marginLeft: 8,
+        fontWeight: '500',
+    },
+    actionsContainer: {
+        flexDirection: 'column',
+        gap: 15,
+    },
+    actionButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    editButton: {
+        backgroundColor: '#3498db',
+    },
+    deleteButton: {
+        backgroundColor: '#e74c3c',
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        marginTop: 60,
+        paddingHorizontal: 20,
+    },
+    emptyText: {
+        textAlign: 'center',
+        fontSize: 18,
+        color: '#666',
+        fontWeight: 'bold',
+    },
+    emptySubText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#888',
+        marginTop: 8,
+    },
+    exitButton: {
+        backgroundColor: '#8e44ad',
+        paddingVertical: 15,
+        borderRadius: 10,
+        alignSelf: 'stretch',
+        marginHorizontal: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+        marginBottom: 45,
+    },
+    exitButtonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
 });
 
 export default ManageReminders;

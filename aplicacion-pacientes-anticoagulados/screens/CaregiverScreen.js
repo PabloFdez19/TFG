@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../components/AuthContext';
 
-// ✅ Componente para el temporizador de la sesión
+
 const SessionTimer = () => {
   const { sessionEndTime, logout } = useContext(AuthContext);
   const [timeLeft, setTimeLeft] = useState('');
@@ -48,6 +48,8 @@ const SessionTimer = () => {
 const CaregiverScreen = ({ navigation }) => {
   const { logout, pinIsSet, exitCaregiverMode } = useContext(AuthContext);
 
+  // --- MODIFICACIÓN ---
+  // Se ha eliminado "Gestionar Recordatorios" de las opciones del menú.
   const menuItems = [
     {
       title: "Añadir Medicación",
@@ -58,11 +60,6 @@ const CaregiverScreen = ({ navigation }) => {
       title: "Gestionar Medicaciones",
       icon: <Ionicons name="list-outline" size={28} color="#2A7F9F" />,
       screen: 'manageMedications'
-    },
-    {
-      title: "Gestionar Recordatorios",
-      icon: <Ionicons name="alarm-outline" size={28} color="#2A7F9F" />,
-      screen: 'manageReminders'
     }
   ];
 
