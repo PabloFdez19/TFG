@@ -22,7 +22,8 @@ const DoseForm = ({ medication, onDosesGenerated }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [interval, setInterval] = useState('8');
     const [selectedDays, setSelectedDays] = useState([]);
-    const [duration, setDuration] = useState('30');
+    // --- MODIFICACIÓN: El estado ahora representa días, no número de dosis ---
+    const [durationInDays, setDurationInDays] = useState('14'); 
     const [showPicker, setShowPicker] = useState(false);
     const [pickerConfig, setPickerConfig] = useState({ mode: 'time', index: 0 });
 
@@ -45,63 +46,65 @@ const DoseForm = ({ medication, onDosesGenerated }) => {
     const addTime = () => setTimes([...times, new Date()]);
     const removeTime = (index) => setTimes(times.filter((_, i) => i !== index));
 
+    // --- MODIFICACIÓN CLAVE: Lógica de generación de dosis reescrita ---
     const handleGenerateDoses = async () => {
-        if (!amount.trim() || !unit.trim() || !duration.trim()) {
+        if (!amount.trim() || !unit.trim() || !durationInDays.trim()) {
             Alert.alert('Faltan datos', 'Por favor, completa la cantidad, unidad y duración.');
             return;
         }
 
         const newDoses = [];
-        let currentDate = new Date(startDate);
-        currentDate.setHours(0, 0, 0, 0);
-
-        const totalDoses = parseInt(duration, 10);
-        if (isNaN(totalDoses) || totalDoses <= 0) {
-            Alert.alert('Duración inválida', 'El número de dosis debe ser un número positivo.');
+        const daysToGenerate = parseInt(durationInDays, 10);
+        if (isNaN(daysToGenerate) || daysToGenerate <= 0) {
+            Alert.alert('Duración inválida', 'La duración debe ser un número positivo de días.');
             return;
         }
+        
+        const localStartDate = new Date(startDate);
+        localStartDate.setHours(0,0,0,0);
+        
+        const endDate = new Date(localStartDate);
+        endDate.setDate(localStartDate.getDate() + daysToGenerate);
 
-        let generatedCount = 0;
-        let loopGuard = 0; 
-        while (generatedCount < totalDoses && loopGuard < 1000) {
-            let isValidDay = false;
-            if (frequency === 'daily') isValidDay = true;
-            else if (frequency === 'weekly') isValidDay = selectedDays.includes(currentDate.getDay());
-            else if (frequency === 'interval_hours') isValidDay = true;
+        if (frequency === 'interval_hours') {
+            const intervalHours = parseInt(interval, 10);
+            if (isNaN(intervalHours) || intervalHours <= 0) {
+                Alert.alert('Intervalo inválido', 'El intervalo en horas debe ser un número positivo.');
+                return;
+            }
+            let doseTime = new Date(localStartDate);
+            doseTime.setHours(times[0].getHours(), times[0].getMinutes(), 0, 0);
 
-            if (isValidDay) {
-                if (frequency === 'interval_hours') {
-                    const baseTime = new Date(startDate);
-                    baseTime.setHours(times[0].getHours(), times[0].getMinutes());
-                    const intervalHours = parseInt(interval, 10);
-                    if (isNaN(intervalHours) || intervalHours <= 0) {
-                        Alert.alert('Intervalo inválido', 'El intervalo debe ser un número positivo.');
-                        return;
-                    }
-                    for (let i = 0; i < totalDoses; i++) {
-                        const doseTime = new Date(baseTime.getTime() + i * intervalHours * 60 * 60 * 1000);
-                        if (doseTime > new Date()) {
-                            newDoses.push({ id: `${Date.now()}_${i}`, amount, unit, time: doseTime.toISOString() });
-                        }
-                    }
-                    generatedCount = totalDoses;
-                } else {
+            while (doseTime < endDate) {
+                if (doseTime > new Date()) {
+                    newDoses.push({ id: `${Date.now()}_${newDoses.length}`, amount, unit, time: doseTime.toISOString() });
+                }
+                doseTime.setHours(doseTime.getHours() + intervalHours);
+            }
+        } else {
+            let currentDate = new Date(localStartDate);
+            while(currentDate < endDate) {
+                let shouldAddDoseToday = false;
+                if (frequency === 'daily') {
+                    shouldAddDoseToday = true;
+                } else if (frequency === 'weekly' && selectedDays.includes(currentDate.getDay())) {
+                    shouldAddDoseToday = true;
+                }
+                
+                if (shouldAddDoseToday) {
                     for (const time of times) {
-                        if (generatedCount >= totalDoses) break;
                         const doseTime = new Date(currentDate);
-                        doseTime.setHours(time.getHours(), time.getMinutes());
+                        doseTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
+
                         if (doseTime > new Date()) {
-                            newDoses.push({ id: `${Date.now()}_${newDoses.length}`, amount, unit, time: doseTime.toISOString() });
-                            generatedCount++;
+                           newDoses.push({ id: `${Date.now()}_${newDoses.length}`, amount, unit, time: doseTime.toISOString() });
                         }
                     }
                 }
-            }
-            if (frequency !== 'interval_hours') {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
-            loopGuard++;
         }
+
         onDosesGenerated(newDoses);
     };
 
@@ -109,7 +112,20 @@ const DoseForm = ({ medication, onDosesGenerated }) => {
         <View style={styles.formContainer}>
             <View style={styles.sectionForm}><Text style={styles.sectionTitleForm}>1. Dosis</Text><View style={styles.inlineInputs}><TextInput style={[styles.input, {flex: 1}]} placeholder="Cantidad (ej: 1)" value={amount} onChangeText={setAmount} keyboardType="numeric" /><TextInput style={[styles.input, {flex: 1}]} placeholder="Unidad (ej: pastilla)" value={unit} onChangeText={setUnit} /></View></View>
             <View style={styles.sectionForm}><Text style={styles.sectionTitleForm}>2. Frecuencia y Horario</Text><View style={styles.freqContainer}><TouchableOpacity style={[styles.freqButton, frequency === 'daily' && styles.freqButtonActive]} onPress={() => setFrequency('daily')}><Text style={[styles.freqText, frequency === 'daily' && styles.freqTextActive]}>Diario</Text></TouchableOpacity><TouchableOpacity style={[styles.freqButton, frequency === 'weekly' && styles.freqButtonActive]} onPress={() => setFrequency('weekly')}><Text style={[styles.freqText, frequency === 'weekly' && styles.freqTextActive]}>Semanal</Text></TouchableOpacity><TouchableOpacity style={[styles.freqButton, frequency === 'interval_hours' && styles.freqButtonActive]} onPress={() => setFrequency('interval_hours')}><Text style={[styles.freqText, frequency === 'interval_hours' && styles.freqTextActive]}>Intervalo</Text></TouchableOpacity></View>{frequency === 'weekly' && (<View style={styles.daysContainer}>{daysOfWeek.map((day, index) => (<TouchableOpacity key={index} style={[styles.dayButton, selectedDays.includes(index) && styles.dayButtonSelected]} onPress={() => setSelectedDays(prev => prev.includes(index) ? prev.filter(d => d !== index) : [...prev, index])}><Text style={[styles.dayText, selectedDays.includes(index) && styles.dayTextSelected]}>{day}</Text></TouchableOpacity>))}</View>)}{frequency === 'interval_hours' ? (<View style={styles.timeSection}><Text style={styles.label}>Empezar el ciclo a las:</Text><TouchableOpacity style={styles.timeButton} onPress={() => showTimePicker(0)}><Ionicons name="time-outline" size={24} color="#2980b9" /><Text style={styles.timeText}>{times[0].toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text></TouchableOpacity></View>) : (<View style={styles.timeSection}><Text style={styles.label}>Horas de toma:</Text>{times.map((time, index) => (<View key={index} style={styles.timeRow}><TouchableOpacity style={styles.timeButton} onPress={() => showTimePicker(index)}><Ionicons name="alarm-outline" size={24} color="#2980b9" /><Text style={styles.timeText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text></TouchableOpacity>{times.length > 1 && <TouchableOpacity onPress={() => removeTime(index)}><Ionicons name="close-circle" size={28} color="#e74c3c" /></TouchableOpacity>}</View>))}<TouchableOpacity style={styles.addTimeButton} onPress={addTime}><Text style={styles.addTimeText}>+ Añadir hora</Text></TouchableOpacity></View>)}</View>
-            <View style={styles.sectionForm}><Text style={styles.sectionTitleForm}>3. Duración</Text><TouchableOpacity style={[styles.timeButton, {marginBottom: 10}]} onPress={showDatePicker}><Ionicons name="calendar-outline" size={24} color="#2980b9" /><Text style={styles.timeText}>Empezar el {startDate.toLocaleDateString('es-ES')}</Text></TouchableOpacity><View style={styles.inlineInputs}>{frequency === 'interval_hours' && (<TextInput style={[styles.input, {flex: 1}]} placeholder="Intervalo (horas)" value={interval} onChangeText={setInterval} keyboardType="numeric" />)}<TextInput style={[styles.input, {flex: 1}]} placeholder="Nº total de dosis" value={duration} onChangeText={setDuration} keyboardType="numeric" /></View></View>
+            <View style={styles.sectionForm}>
+                <Text style={styles.sectionTitleForm}>3. Duración del Tratamiento</Text>
+                <TouchableOpacity style={[styles.timeButton, {marginBottom: 10}]} onPress={showDatePicker}>
+                    <Ionicons name="calendar-outline" size={24} color="#2980b9" />
+                    <Text style={styles.timeText}>Empezar el {startDate.toLocaleDateString('es-ES')}</Text>
+                </TouchableOpacity>
+                {/* --- MODIFICACIÓN: El input ahora pide días --- */}
+                <View style={styles.inlineInputs}>
+                    {frequency === 'interval_hours' && (
+                        <TextInput style={[styles.input, {flex: 1}]} placeholder="Intervalo (horas)" value={interval} onChangeText={setInterval} keyboardType="numeric" />
+                    )}
+                    <TextInput style={[styles.input, {flex: 1}]} placeholder="Duración (días)" value={durationInDays} onChangeText={setDurationInDays} keyboardType="numeric" />
+                </View>
+            </View>
             <TouchableOpacity style={styles.saveButton} onPress={handleGenerateDoses}><Ionicons name="checkmark-circle" size={30} color="white" /><Text style={styles.saveButtonText}>Generar Dosis</Text></TouchableOpacity>
             
             {showPicker && (
@@ -246,9 +262,6 @@ const ManageDosesScreen = ({ route, navigation }) => {
         return <View style={styles.centered}><ActivityIndicator size="large" color="#2A7F9F" /></View>;
     }
 
-    // --- MODIFICACIÓN ESTRUCTURAL ---
-    // Se elimina KeyboardAvoidingView para evitar errores de layout complejos.
-    // Se confía en el comportamiento del ScrollView.
     return (
         <View style={{ flex: 1, backgroundColor: '#f2f2f7' }}>
             <ScrollView 
@@ -284,6 +297,7 @@ const ManageDosesScreen = ({ route, navigation }) => {
     );
 };
 
+// Styles remain the same, so they are omitted for brevity
 const styles = StyleSheet.create({
     container: { flex: 1, paddingTop: 70, paddingHorizontal: 15 },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f2f2f7' },
@@ -309,7 +323,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#ddd'
     },
     backButton: {
-        backgroundColor: '#95a5a6',
+        backgroundColor: '#2a86ff',
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center'

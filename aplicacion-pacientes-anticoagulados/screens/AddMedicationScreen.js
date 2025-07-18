@@ -68,8 +68,15 @@ const AddMedicationScreen = ({ navigation }) => {
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Ionicons name="checkmark-circle-outline" size={30} color="white" />
-        {/* MODIFICADO: El texto del botón ahora es más claro */}
         <Text style={styles.saveButtonText}>Guardar y Configurar Dosis</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+          style={styles.exitButton}
+          onPress={navigation.goBack}
+        > 
+        <View>
+          <Text style={styles.exitButtonText}> Salir</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -100,6 +107,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 12,
+  },
+  exitButton: {
+    backgroundColor: '#2a86ff',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignSelf: 'stretch',
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  exitButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 

@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     exitButton: {
-        backgroundColor: '#8e44ad',
+        backgroundColor: '#2a86ff',
         paddingVertical: 15,
         borderRadius: 10,
         alignSelf: 'stretch',
